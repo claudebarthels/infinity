@@ -86,6 +86,7 @@ void QueuePair::activate(uint16_t remoteDeviceId, uint32_t remoteQueuePairNumber
 	qpAttributes.ah_attr.dlid = remoteDeviceId;
 	qpAttributes.ah_attr.sl = 0;
 	qpAttributes.ah_attr.src_path_bits = 0;
+	qpAttributes.ah_attr.port_num = context->getDevicePort();
 
 	int32_t returnValue = ibv_modify_qp(this->ibvQueuePair, &qpAttributes,
 			IBV_QP_STATE | IBV_QP_AV | IBV_QP_PATH_MTU | IBV_QP_DEST_QPN | IBV_QP_RQ_PSN | IBV_QP_MIN_RNR_TIMER | IBV_QP_MAX_DEST_RD_ATOMIC);
