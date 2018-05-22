@@ -51,8 +51,9 @@ delete context;
 
 ## Citing Infinity in Academic Publications
 
-This library has been created in the context of my work on parallel and distributed join algorithms. Detailed project descriptions can be found in the two papers published at ACM SIGMOD 2015 and VLDB 2017. Further publications concerning the use of RDMA have been submitted to several leading systems conferences and are currently under review. Therefore, for the time being, please refer to the publications listed below when referring to this library.
+This library has been created in the context of my work on parallel and distributed join algorithms. Detailed project descriptions can be found in two papers published at ACM SIGMOD 2015 and VLDB 2017. Further publications concerning the use of RDMA have been submitted to several leading systems conferences and are currently under review. Therefore, for the time being, please refer to the publications listed below when referring to this library.
 
+---
 
 Claude Barthels, Simon Loesing, Gustavo Alonso, Donald Kossmann.
 **Rack-Scale In-Memory Join Processing using RDMA.**
@@ -74,6 +75,7 @@ Claude Barthels, Simon Loesing, Gustavo Alonso, Donald Kossmann.
 }
 ```
 
+---
 
 Claude Barthels, Ingo Müller, Timo Schneider, Gustavo Alonso, Torsten Hoefler.
 **Distributed Join Algorithms on Thousands of Cores.**
