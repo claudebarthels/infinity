@@ -215,6 +215,11 @@ void QueuePair::write(infinity::memory::Buffer* buffer, infinity::memory::Region
 	INFINITY_ASSERT(buffer->getSizeInBytes() <= ((uint64_t) UINT32_MAX), "[INFINITY][QUEUES][QUEUEPAIR] Request must be smaller or equal to UINT_32_MAX bytes. This memory region is larger. Please explicitly indicate the size of the data to transfer.\n");
 }
 
+void QueuePair::write(infinity::memory::Buffer* buffer, infinity::memory::RegionToken* destination, bool fenced, infinity::requests::RequestToken *requestToken) {
+	write(buffer, 0, destination, 0, buffer->getSizeInBytes(), fenced, requestToken);
+	INFINITY_ASSERT(buffer->getSizeInBytes() <= ((uint64_t) UINT32_MAX), "[INFINITY][QUEUES][QUEUEPAIR] Request must be smaller or equal to UINT_32_MAX bytes. This memory region is larger. Please explicitly indicate the size of the data to transfer.\n");
+}
+
 void QueuePair::write(infinity::memory::Buffer* buffer, infinity::memory::RegionToken* destination, uint32_t sizeInBytes,
 		infinity::requests::RequestToken *requestToken) {
 	write(buffer, 0, destination, 0, sizeInBytes, requestToken);
@@ -222,6 +227,11 @@ void QueuePair::write(infinity::memory::Buffer* buffer, infinity::memory::Region
 
 void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* destination, uint64_t remoteOffset,
 		uint32_t sizeInBytes, infinity::requests::RequestToken *requestToken) {
+  write(buffer, localOffset, destination, remoteOffset, sizeInBytes, false, requestToken);
+}
+
+void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* destination, uint64_t remoteOffset,
+		uint32_t sizeInBytes, bool fenced, infinity::requests::RequestToken *requestToken) {
 
 	if (requestToken != NULL) {
 		requestToken->reset();
@@ -248,6 +258,9 @@ void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, in
 	if (requestToken != NULL) {
 		workRequest.send_flags = IBV_SEND_SIGNALED;
 	}
+  if (fenced) {
+    workRequest.send_flags = workRequest.send_flags | IBV_SEND_FENCE;
+  }
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
 	workRequest.wr.rdma.rkey = destination->getRemoteKey();
 
