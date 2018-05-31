@@ -37,7 +37,8 @@ SOURCE_FILES =	$(SOURCE_FOLDER)/infinity/core/Context.cpp \
 						$(SOURCE_FOLDER)/infinity/requests/RequestToken.cpp \
 						$(SOURCE_FOLDER)/infinity/utils/Address.cpp
 
-HEADER_FILES	=	$(SOURCE_FOLDER)/infinity/core/Context.h \
+HEADER_FILES	=	$(SOURCE_FOLDER)/infinity/infinity.h \
+						$(SOURCE_FOLDER)/infinity/core/Context.h \
 						$(SOURCE_FOLDER)/infinity/core/Configuration.h \
 						$(SOURCE_FOLDER)/infinity/memory/Atomic.h \
 						$(SOURCE_FOLDER)/infinity/memory/Buffer.h \
