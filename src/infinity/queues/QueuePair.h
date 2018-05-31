@@ -66,9 +66,21 @@ public:
 	/**
 	 * Queue pair information
 	 */
+
 	uint16_t getLocalDeviceId();
 	uint32_t getQueuePairNumber();
 	uint32_t getSequenceNumber();
+
+public:
+
+	/**
+	 * Modification of flags
+	 */
+
+	void enableFencedOperations();
+	void disableFencedOperations();
+	void enableSignaledOperations();
+	void disableSignaledOperations();
 
 public:
 
@@ -81,13 +93,10 @@ public:
 	void send(infinity::memory::Buffer *buffer, uint64_t localOffset, uint32_t sizeInBytes, infinity::requests::RequestToken *requestToken = NULL);
 
 	void write(infinity::memory::Buffer *buffer, infinity::memory::RegionToken *destination, infinity::requests::RequestToken *requestToken = NULL);
-	void write(infinity::memory::Buffer *buffer, infinity::memory::RegionToken *destination, bool fenced, infinity::requests::RequestToken *requestToken = NULL);
 	void write(infinity::memory::Buffer *buffer, infinity::memory::RegionToken *destination, uint32_t sizeInBytes,
 			infinity::requests::RequestToken *requestToken = NULL);
 	void write(infinity::memory::Buffer *buffer, uint64_t localOffset, infinity::memory::RegionToken *destination, uint64_t remoteOffset, uint32_t sizeInBytes,
 			infinity::requests::RequestToken *requestToken = NULL);
-	void write(infinity::memory::Buffer *buffer, uint64_t localOffset, infinity::memory::RegionToken *destination, uint64_t remoteOffset, uint32_t sizeInBytes,
-			bool fenced, infinity::requests::RequestToken *requestToken = NULL);
 
 	void read(infinity::memory::Buffer *buffer, infinity::memory::RegionToken *source, infinity::requests::RequestToken *requestToken = NULL);
 	void read(infinity::memory::Buffer *buffer, infinity::memory::RegionToken *source, uint32_t sizeInBytes, infinity::requests::RequestToken *requestToken =
@@ -135,6 +144,8 @@ protected:
 
 	void *userData;
 	uint32_t userDataSize;
+
+	int defaultFlags;
 
 };
 
