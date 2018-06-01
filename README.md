@@ -1,6 +1,6 @@
 # Infinity - A lightweight C++ RDMA library for InfiniBand
 
-Infinity is a simple, powerful, object-oriented abstraction of ibVerbs. The library enables users to build sophisticated applications that use Remote Direct Memory Access (RDMA) without sacrificing performance. It significantly lowers the barrier to get started with RDMA programming. Infinity provides support for two-sided (send/receive) as well as one-sided (read/write/atomic) operations. The library is written in C++ and has been ported Rust ([Infinity-Rust](https://github.com/utaal/infinity-rust/)) by @utaal.
+Infinity is a simple, powerful, object-oriented abstraction of ibVerbs. The library enables users to build sophisticated applications that use Remote Direct Memory Access (RDMA) without sacrificing performance. It significantly lowers the barrier to get started with RDMA programming. Infinity provides support for two-sided (send/receive) as well as one-sided (read/write/atomic) operations. The library is written in C++ and has been ported to Rust ([Infinity-Rust](https://github.com/utaal/infinity-rust/)) by @utaal.
 
 ## Installation
 
