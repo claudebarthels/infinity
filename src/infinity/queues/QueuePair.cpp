@@ -569,6 +569,15 @@ void QueuePair::disableSignaledOperations() {
 	defaultFlags &= (~IBV_SEND_SIGNALED);
 }
 
+void QueuePair::enableInlinedOperations() {
+	defaultFlags |= IBV_SEND_INLINE;
+}
+
+void QueuePair::disableInlinedOperations() {
+	defaultFlags &= (~IBV_SEND_INLINE);
+}
+
+
 bool QueuePair::hasUserData() {
 	return (this->userData != NULL && this->userDataSize != 0);
 }

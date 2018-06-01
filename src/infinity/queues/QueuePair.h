@@ -81,6 +81,8 @@ public:
 	void disableFencedOperations();
 	void enableSignaledOperations();
 	void disableSignaledOperations();
+	void enableInlinedOperations();
+	void disableInlinedOperations();
 
 public:
 
