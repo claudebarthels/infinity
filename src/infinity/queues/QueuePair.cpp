@@ -163,7 +163,7 @@ void QueuePair::send(infinity::memory::Buffer* buffer, uint64_t localOffset, uin
 	workRequest.opcode = IBV_WR_SEND;
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);
@@ -203,7 +203,7 @@ void QueuePair::sendWithImmediate(infinity::memory::Buffer* buffer, uint64_t loc
 	workRequest.imm_data = htonl(immediateValue);
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);
@@ -251,7 +251,7 @@ void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, in
 	workRequest.opcode = IBV_WR_RDMA_WRITE;
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
 	workRequest.wr.rdma.rkey = destination->getRemoteKey();
@@ -296,7 +296,7 @@ void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t lo
 	workRequest.imm_data = htonl(immediateValue);
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
 	workRequest.wr.rdma.rkey = destination->getRemoteKey();
@@ -347,7 +347,7 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 	workRequest.opcode = IBV_WR_RDMA_WRITE;
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
 	workRequest.wr.rdma.rkey = destination->getRemoteKey();
@@ -399,7 +399,7 @@ void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint
 	workRequest.imm_data = htonl(immediateValue);
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
 	workRequest.wr.rdma.rkey = destination->getRemoteKey();
@@ -452,7 +452,7 @@ void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, inf
 	workRequest.opcode = IBV_WR_RDMA_READ;
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = source->getAddress() + remoteOffset;
 	workRequest.wr.rdma.rkey = source->getRemoteKey();
@@ -492,7 +492,7 @@ void QueuePair::compareAndSwap(infinity::memory::RegionToken* destination, infin
 	workRequest.opcode = IBV_WR_ATOMIC_CMP_AND_SWP;
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.atomic.remote_addr = destination->getAddress();
 	workRequest.wr.atomic.rkey = destination->getRemoteKey();
@@ -539,7 +539,7 @@ void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, infinity
 	workRequest.opcode = IBV_WR_ATOMIC_FETCH_AND_ADD;
 	workRequest.send_flags = defaultFlags;
 	if (requestToken != NULL) {
-		workRequest.send_flags = IBV_SEND_SIGNALED;
+		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.atomic.remote_addr = destination->getAddress();
 	workRequest.wr.atomic.rkey = destination->getRemoteKey();
