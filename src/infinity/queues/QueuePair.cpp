@@ -324,6 +324,8 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 	struct ibv_send_wr workRequest;
 	struct ibv_send_wr *badWorkRequest;
 
+	INFINITY_ASSERT(numberOfElements <= infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS, "[INFINITY][QUEUES][QUEUEPAIR] Request contains too many SGE.\n");
+
 	uint32_t totalSizeInBytes = 0;
 	for (uint32_t i = 0; i < numberOfElements; ++i) {
 		if (localOffsets != NULL) {
@@ -374,6 +376,8 @@ void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint
 	struct ibv_sge *sgElements = (ibv_sge *) calloc(numberOfElements, sizeof(ibv_sge));
 	struct ibv_send_wr workRequest;
 	struct ibv_send_wr *badWorkRequest;
+
+	INFINITY_ASSERT(numberOfElements <= infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS, "[INFINITY][QUEUES][QUEUEPAIR] Request contains too many SGE.\n");
 
 	uint32_t totalSizeInBytes = 0;
 	for (uint32_t i = 0; i < numberOfElements; ++i) {
