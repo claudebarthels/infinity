@@ -31,6 +31,9 @@ public:
 	static const uint32_t MAX_NUMBER_OF_OUTSTANDING_REQUESTS = 16351;	// Must be less than (MAX_QP_WR * MAX_QP)
 																		// Since we use one single shared receive queue,
 																		// this number should be less than MAX_SRQ_WR
+
+	static const uint32_t MAX_NUMBER_OF_SGE_ELEMENTS = 1;				// Must be less than MAX_SGE
+
 public:
 
 	/**

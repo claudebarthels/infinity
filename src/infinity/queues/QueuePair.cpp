@@ -31,9 +31,9 @@ QueuePair::QueuePair(infinity::core::Context* context) :
 	qpInitAttributes.recv_cq = context->getReceiveCompletionQueue();
 	qpInitAttributes.srq = context->getSharedReceiveQueue();
 	qpInitAttributes.cap.max_send_wr = MAX(infinity::core::Configuration::SEND_COMPLETION_QUEUE_LENGTH, 1);
-	qpInitAttributes.cap.max_send_sge = 1;
+	qpInitAttributes.cap.max_send_sge = infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS;
 	qpInitAttributes.cap.max_recv_wr = MAX(infinity::core::Configuration::RECV_COMPLETION_QUEUE_LENGTH, 1);
-	qpInitAttributes.cap.max_recv_sge = 1;
+	qpInitAttributes.cap.max_recv_sge = infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS;
 	qpInitAttributes.qp_type = IBV_QPT_RC;
 	qpInitAttributes.sq_sig_all = 0;
 
