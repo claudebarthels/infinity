@@ -22,9 +22,9 @@ public:
 	 * Queue length settings
 	 */
 
-	static const uint32_t SEND_COMPLETION_QUEUE_LENGTH = 2; 		// Must be less than MAX_CQE
+	static const uint32_t SEND_COMPLETION_QUEUE_LENGTH = 200; 		// Must be less than MAX_CQE
 
-	static const uint32_t RECV_COMPLETION_QUEUE_LENGTH = 2; 		// Must be less than MAX_CQE
+	static const uint32_t RECV_COMPLETION_QUEUE_LENGTH = 200; 		// Must be less than MAX_CQE
 
 	static const uint32_t SHARED_RECV_QUEUE_LENGTH = 16351; 			// Must be less than MAX_SRQ_WR
 
