@@ -33,7 +33,7 @@ public:
 
 protected:
 
-	uint64_t value;
+	uint64_t value = 0;
 
 
 };

@@ -28,12 +28,12 @@ public:
 public:
 
 	void * getData();
-	void resize(uint64_t newSize, void *newData = NULL);
+	void resize(uint64_t newSize, void *newData = nullptr);
 
 protected:
 
-	bool memoryRegistered;
-	bool memoryAllocated;
+	bool memoryRegistered = false;
+	bool memoryAllocated = false;
 
 
 };

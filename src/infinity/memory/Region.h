@@ -42,14 +42,14 @@ public:
 
 protected:
 
-	infinity::core::Context* context;
+	infinity::core::Context* context = nullptr;
 	RegionType memoryRegionType;
-	ibv_mr *ibvMemoryRegion;
+	ibv_mr *ibvMemoryRegion = nullptr;
 
 protected:
 
-	void * data;
-	uint64_t sizeInBytes;
+	void * data = nullptr;
+	uint64_t sizeInBytes = 0;
 
 };
 

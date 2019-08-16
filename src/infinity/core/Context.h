@@ -40,11 +40,11 @@ namespace infinity {
 namespace core {
 
 typedef struct {
-	infinity::memory::Buffer *buffer;
-	uint32_t bytesWritten;
-	uint32_t immediateValue;
-	bool immediateValueValid;
-	infinity::queues::QueuePair *queuePair;
+	infinity::memory::Buffer *buffer = nullptr;
+	uint32_t bytesWritten = 0;
+	uint32_t immediateValue = 0;
+	bool immediateValueValid = false;
+	infinity::queues::QueuePair *queuePair = nullptr;
 } receive_element_t;
 
 class Context {
@@ -75,7 +75,7 @@ public:
 	 * Check if receive operation completed
 	 */
 	bool receive(receive_element_t *receiveElement);
-	bool receive(infinity::memory::Buffer **buffer, uint32_t *bytesWritten, uint32_t *immediateValue, bool *immediateValueValid, infinity::queues::QueuePair **queuePair = NULL);
+	bool receive(infinity::memory::Buffer **buffer, uint32_t *bytesWritten, uint32_t *immediateValue, bool *immediateValueValid, infinity::queues::QueuePair **queuePair = nullptr);
 
 	/**
 	 * Post a new buffer for receiving messages
@@ -84,8 +84,8 @@ public:
 
 public:
 
-	infinity::requests::RequestToken * defaultRequestToken;
-	infinity::memory::Atomic * defaultAtomic;
+	infinity::requests::RequestToken * defaultRequestToken = nullptr;
+	infinity::memory::Atomic * defaultAtomic = nullptr;
 
 protected:
 
@@ -136,22 +136,22 @@ protected:
 	/**
 	 * IB context and protection domain
 	 */
-	ibv_context *ibvContext;
-	ibv_pd *ibvProtectionDomain;
+	ibv_context *ibvContext = nullptr;
+	ibv_pd *ibvProtectionDomain = nullptr;
 
 	/**
 	 * Local device id and port
 	 */
-	ibv_device *ibvDevice;
-	uint16_t ibvLocalDeviceId;
-	uint16_t ibvDevicePort;
+	ibv_device *ibvDevice = nullptr;
+	uint16_t ibvLocalDeviceId = 0;
+	uint16_t ibvDevicePort = 1;
 
 	/**
 	 * IB send and receive completion queues
 	 */
-	ibv_cq *ibvSendCompletionQueue;
-	ibv_cq *ibvReceiveCompletionQueue;
-	ibv_srq *ibvSharedReceiveQueue;
+	ibv_cq *ibvSendCompletionQueue = nullptr;
+	ibv_cq *ibvReceiveCompletionQueue = nullptr;
+	ibv_srq *ibvSharedReceiveQueue = nullptr;
 
 protected:
 

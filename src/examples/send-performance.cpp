@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 			fflush(stdout);
 
 			struct timeval start;
-			gettimeofday(&start, NULL);
+			gettimeofday(&start, nullptr);
 
 			for(uint32_t i=0; i<OPERATIONS_COUNT; ++i) {
 				if(i %BUFFER_COUNT == 0 || i == OPERATIONS_COUNT) {
@@ -139,13 +139,13 @@ int main(int argc, char **argv) {
 
 				} else {
 
-					qp->send(sendBuffer, messageSize, NULL);
+					qp->send(sendBuffer, messageSize, nullptr);
 
 				}
 			}
 
 			struct timeval stop;
-			gettimeofday(&stop, NULL);
+			gettimeofday(&stop, nullptr);
 
 			uint64_t time = timeDiff(stop, start);
 			double msgRate = ((double)(OPERATIONS_COUNT * 1000000L)) / time;

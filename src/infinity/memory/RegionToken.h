@@ -36,7 +36,7 @@ public:
 
 protected:
 
-	Region *memoryRegion;
+	Region *memoryRegion = nullptr;
 	const RegionType memoryRegionType;
 	const uint64_t sizeInBytes;
 	const uint64_t address;

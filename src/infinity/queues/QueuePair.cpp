@@ -52,7 +52,7 @@ QueuePair::QueuePair(infinity::core::Context* context) :
 	qpInitAttributes.sq_sig_all = 0;
 
 	this->ibvQueuePair = ibv_create_qp(context->getProtectionDomain(), &(qpInitAttributes));
-	INFINITY_ASSERT(this->ibvQueuePair != NULL, "[INFINITY][QUEUES][QUEUEPAIR] Cannot create queue pair.\n");
+	INFINITY_ASSERT(this->ibvQueuePair != nullptr, "[INFINITY][QUEUES][QUEUEPAIR] Cannot create queue pair.\n");
 
 	ibv_qp_attr qpAttributes;
 	memset(&qpAttributes, 0, sizeof(qpAttributes));
@@ -69,7 +69,7 @@ QueuePair::QueuePair(infinity::core::Context* context) :
 	std::random_device randomGenerator;
 	this->sequenceNumber = randomGenerator();
 
-	this->userData = NULL;
+	this->userData = nullptr;
 	this->userDataSize = 0;
 }
 
@@ -78,7 +78,7 @@ QueuePair::~QueuePair() {
 	int32_t returnValue = ibv_destroy_qp(this->ibvQueuePair);
 	INFINITY_ASSERT(returnValue == 0, "[INFINITY][QUEUES][QUEUEPAIR] Cannot delete queue pair.\n");
 
-	if (this->userData != NULL && this->userDataSize != 0) {
+	if (this->userData != nullptr && this->userDataSize != 0) {
 		free(this->userData);
 		this->userDataSize = 0;
 	}
@@ -152,7 +152,7 @@ void QueuePair::send(infinity::memory::Buffer* buffer, uint32_t sizeInBytes, inf
 void QueuePair::send(infinity::memory::Buffer* buffer, uint64_t localOffset, uint32_t sizeInBytes, OperationFlags send_flags,
     infinity::requests::RequestToken *requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(buffer);
 	}
@@ -175,7 +175,7 @@ void QueuePair::send(infinity::memory::Buffer* buffer, uint64_t localOffset, uin
 	workRequest.num_sge = 1;
 	workRequest.opcode = IBV_WR_SEND;
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 
@@ -190,7 +190,7 @@ void QueuePair::send(infinity::memory::Buffer* buffer, uint64_t localOffset, uin
 void QueuePair::sendWithImmediate(infinity::memory::Buffer* buffer, uint64_t localOffset, uint32_t sizeInBytes, uint32_t immediateValue,
     OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(buffer);
 		requestToken->setImmediateValue(immediateValue);
@@ -215,7 +215,7 @@ void QueuePair::sendWithImmediate(infinity::memory::Buffer* buffer, uint64_t loc
 	workRequest.opcode = IBV_WR_SEND_WITH_IMM;
 	workRequest.imm_data = htonl(immediateValue);
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 
@@ -240,7 +240,7 @@ void QueuePair::write(infinity::memory::Buffer* buffer, infinity::memory::Region
 void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* destination, uint64_t remoteOffset,
 		uint32_t sizeInBytes, OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(buffer);
 	}
@@ -263,7 +263,7 @@ void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, in
 	workRequest.num_sge = 1;
 	workRequest.opcode = IBV_WR_RDMA_WRITE;
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
@@ -283,7 +283,7 @@ void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, in
 void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* destination, uint64_t remoteOffset,
 		uint32_t sizeInBytes, uint32_t immediateValue, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(buffer);
 		requestToken->setImmediateValue(immediateValue);
@@ -308,7 +308,7 @@ void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t lo
 	workRequest.opcode = IBV_WR_RDMA_WRITE_WITH_IMM;
 	workRequest.imm_data = htonl(immediateValue);
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
@@ -328,7 +328,7 @@ void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t lo
 void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesInBytes, uint64_t* localOffsets, uint32_t numberOfElements,
 		infinity::memory::RegionToken* destination, uint64_t remoteOffset, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(buffers[0]);
 	}
@@ -341,12 +341,12 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 
 	uint32_t totalSizeInBytes = 0;
 	for (uint32_t i = 0; i < numberOfElements; ++i) {
-		if (localOffsets != NULL) {
+		if (localOffsets != nullptr) {
 			sgElements[i].addr = buffers[i]->getAddress() + localOffsets[i];
 		} else {
 			sgElements[i].addr = buffers[i]->getAddress();
 		}
-		if (sizesInBytes != NULL) {
+		if (sizesInBytes != nullptr) {
 			sgElements[i].length = sizesInBytes[i];
 		} else {
 			sgElements[i].length = buffers[i]->getSizeInBytes();
@@ -361,7 +361,7 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 	workRequest.num_sge = numberOfElements;
 	workRequest.opcode = IBV_WR_RDMA_WRITE;
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
@@ -380,7 +380,7 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint32_t* sizesInBytes, uint64_t* localOffsets, uint32_t numberOfElements,
 		infinity::memory::RegionToken* destination, uint64_t remoteOffset, uint32_t immediateValue, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(buffers[0]);
 		requestToken->setImmediateValue(immediateValue);
@@ -394,12 +394,12 @@ void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint
 
 	uint32_t totalSizeInBytes = 0;
 	for (uint32_t i = 0; i < numberOfElements; ++i) {
-		if (localOffsets != NULL) {
+		if (localOffsets != nullptr) {
 			sgElements[i].addr = buffers[i]->getAddress() + localOffsets[i];
 		} else {
 			sgElements[i].addr = buffers[i]->getAddress();
 		}
-		if (sizesInBytes != NULL) {
+		if (sizesInBytes != nullptr) {
 			sgElements[i].length = sizesInBytes[i];
 		} else {
 			sgElements[i].length = buffers[i]->getSizeInBytes();
@@ -415,7 +415,7 @@ void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint
 	workRequest.opcode = IBV_WR_RDMA_WRITE_WITH_IMM;
 	workRequest.imm_data = htonl(immediateValue);
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
@@ -445,7 +445,7 @@ void QueuePair::read(infinity::memory::Buffer* buffer, infinity::memory::RegionT
 void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* source, uint64_t remoteOffset, uint32_t sizeInBytes,
 		OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(buffer);
 	}
@@ -468,7 +468,7 @@ void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, inf
 	workRequest.num_sge = 1;
 	workRequest.opcode = IBV_WR_RDMA_READ;
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.rdma.remote_addr = source->getAddress() + remoteOffset;
@@ -488,7 +488,7 @@ void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, inf
 void QueuePair::compareAndSwap(infinity::memory::RegionToken* destination, infinity::memory::Atomic* previousValue, uint64_t compare, uint64_t swap,
 		OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(previousValue);
 	}
@@ -508,7 +508,7 @@ void QueuePair::compareAndSwap(infinity::memory::RegionToken* destination, infin
 	workRequest.num_sge = 1;
 	workRequest.opcode = IBV_WR_ATOMIC_CMP_AND_SWP;
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.atomic.remote_addr = destination->getAddress();
@@ -535,7 +535,7 @@ void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, uint64_t
 void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, infinity::memory::Atomic* previousValue, uint64_t add,
 		OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		requestToken->reset();
 		requestToken->setRegion(previousValue);
 	}
@@ -555,7 +555,7 @@ void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, infinity
 	workRequest.num_sge = 1;
 	workRequest.opcode = IBV_WR_ATOMIC_FETCH_AND_ADD;
 	workRequest.send_flags = send_flags.ibvFlags();
-	if (requestToken != NULL) {
+	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
 	workRequest.wr.atomic.remote_addr = destination->getAddress();
@@ -573,7 +573,7 @@ void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, infinity
 
 
 bool QueuePair::hasUserData() {
-	return (this->userData != NULL && this->userDataSize != 0);
+	return (this->userData != nullptr && this->userDataSize != 0);
 }
 
 uint32_t QueuePair::getUserDataSize() {

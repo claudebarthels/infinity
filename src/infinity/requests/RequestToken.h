@@ -46,18 +46,18 @@ public:
 
 protected:
 
-	infinity::core::Context * const context;
-	infinity::memory::Region * region;
+	infinity::core::Context * const context = nullptr;
+	infinity::memory::Region * region = nullptr;
 
 	std::atomic<bool> completed;
 	std::atomic<bool> success;
 
-	void *userData;
-	uint32_t userDataSize;
-	bool userDataValid;
-
-	uint32_t immediateValue;
-	bool immediateValueValid;
+	void *userData = nullptr;
+	uint32_t userDataSize = 0;
+	bool userDataValid = false;
+ 
+	uint32_t immediateValue = 0;
+	bool immediateValueValid = false;
 
 };
 

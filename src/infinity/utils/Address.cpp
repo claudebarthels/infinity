@@ -22,15 +22,15 @@ namespace utils {
 
 char* Address::getIpAddressOfInterface(const char* interfaceName) {
 
-	struct ifaddrs *ifAddr;
-	struct ifaddrs *ifa;
+	struct ifaddrs *ifAddr = nullptr;
+	struct ifaddrs *ifa = nullptr;
 	char *ipAddress = (char*) calloc(16, sizeof(char));
 
 	int returnValue = getifaddrs(&ifAddr);
 	INFINITY_ASSERT(returnValue != -1, "[INFINITY][UTILS][ADDRESS] Cannot read interface list.\n");
 
-	for (ifa = ifAddr; ifa != NULL; ifa = ifa->ifa_next) {
-		if (ifa->ifa_addr == NULL) {
+	for (ifa = ifAddr; ifa != nullptr; ifa = ifa->ifa_next) {
+		if (ifa->ifa_addr == nullptr) {
 			continue;
 		}
 		if ((ifa->ifa_addr->sa_family == AF_INET) && (strcasecmp(interfaceName, ifa->ifa_name) == 0)) {
@@ -38,7 +38,7 @@ char* Address::getIpAddressOfInterface(const char* interfaceName) {
 			break;
 		}
 	}
-	INFINITY_ASSERT(ifa != NULL, "[INFINITY][UTILS][ADDRESS] Cannot find interface named %s.\n", interfaceName);
+	INFINITY_ASSERT(ifa != nullptr, "[INFINITY][UTILS][ADDRESS] Cannot find interface named %s.\n", interfaceName);
 
 	freeifaddrs(ifAddr);
 

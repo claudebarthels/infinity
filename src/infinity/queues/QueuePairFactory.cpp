@@ -22,10 +22,10 @@ namespace queues {
 
 typedef struct {
 
-	uint16_t localDeviceId;
-	uint32_t queuePairNumber;
-	uint32_t sequenceNumber;
-	uint32_t userDataSize;
+	uint16_t localDeviceId = 0;
+	uint32_t queuePairNumber = 0;
+	uint32_t sequenceNumber = 0;
+	uint32_t userDataSize = 0;
 	char userData[infinity::core::Configuration::MAX_CONNECTION_USER_DATA_SIZE];
 
 } serializedQueuePair;
@@ -79,7 +79,7 @@ QueuePair * QueuePairFactory::acceptIncomingConnection(void *userData, uint32_t 
 	serializedQueuePair *receiveBuffer = (serializedQueuePair*) calloc(1, sizeof(serializedQueuePair));
 	serializedQueuePair *sendBuffer = (serializedQueuePair*) calloc(1, sizeof(serializedQueuePair));
 
-	int connectionSocket = accept(this->serverSocket, (sockaddr *) NULL, NULL);
+	int connectionSocket = accept(this->serverSocket, (sockaddr *) nullptr, nullptr);
 	INFINITY_ASSERT(connectionSocket >= 0, "[INFINITY][QUEUES][FACTORY] Cannot open connection socket.\n");
 
 	int32_t returnValue = recv(connectionSocket, receiveBuffer, sizeof(serializedQueuePair), 0);

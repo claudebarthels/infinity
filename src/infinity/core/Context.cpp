@@ -36,17 +36,17 @@ Context::Context(uint16_t device, uint16_t devicePort) {
 	INFINITY_ASSERT(numberOfInstalledDevices > 0, "[INFINITY][CORE][CONTEXT] No InfiniBand devices found.\n");
 	INFINITY_ASSERT(device < numberOfInstalledDevices, "[INFINITY][CORE][CONTEXT] Requested device %d not found. There are %d devices available.\n",
 			device, numberOfInstalledDevices);
-	INFINITY_ASSERT(ibvDeviceList != NULL, "[INFINITY][CORE][CONTEXT] Device list was NULL.\n");
+	INFINITY_ASSERT(ibvDeviceList != nullptr, "[INFINITY][CORE][CONTEXT] Device list was nullptr.\n");
 
 	// Get IB device
 	this->ibvDevice = ibvDeviceList[device];
-	INFINITY_ASSERT(this->ibvDevice != NULL, "[INFINITY][CORE][CONTEXT] Requested device %d was NULL.\n", device);
+	INFINITY_ASSERT(this->ibvDevice != nullptr, "[INFINITY][CORE][CONTEXT] Requested device %d was nullptr.\n", device);
 
 	// Open IB device and allocate protection domain
 	this->ibvContext = ibv_open_device(this->ibvDevice);
-	INFINITY_ASSERT(this->ibvContext != NULL, "[INFINITY][CORE][CONTEXT] Could not open device %d.\n", device);
+	INFINITY_ASSERT(this->ibvContext != nullptr, "[INFINITY][CORE][CONTEXT] Could not open device %d.\n", device);
 	this->ibvProtectionDomain = ibv_alloc_pd(this->ibvContext);
-	INFINITY_ASSERT(this->ibvProtectionDomain != NULL, "[INFINITY][CORE][CONTEXT] Could not allocate protection domain.\n");
+	INFINITY_ASSERT(this->ibvProtectionDomain != nullptr, "[INFINITY][CORE][CONTEXT] Could not allocate protection domain.\n");
 
 	// Get the LID
 	ibv_port_attr portAttributes;
@@ -55,8 +55,8 @@ Context::Context(uint16_t device, uint16_t devicePort) {
 	this->ibvDevicePort = devicePort;
 
 	// Allocate completion queues
-	this->ibvSendCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::SEND_COMPLETION_QUEUE_LENGTH, 1), NULL, NULL, 0);
-	this->ibvReceiveCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::RECV_COMPLETION_QUEUE_LENGTH, 1), NULL, NULL, 0);
+	this->ibvSendCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::SEND_COMPLETION_QUEUE_LENGTH, 1), nullptr, nullptr, 0);
+	this->ibvReceiveCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::RECV_COMPLETION_QUEUE_LENGTH, 1), nullptr, nullptr, 0);
 
 	// Allocate shared receive queue
 	ibv_srq_init_attr sia;
@@ -65,7 +65,7 @@ Context::Context(uint16_t device, uint16_t devicePort) {
 	sia.attr.max_wr = MAX(Configuration::SHARED_RECV_QUEUE_LENGTH, 1);
 	sia.attr.max_sge = 1;
 	this->ibvSharedReceiveQueue = ibv_create_srq(this->ibvProtectionDomain, &sia);
-	INFINITY_ASSERT(this->ibvSharedReceiveQueue != NULL, "[INFINITY][CORE][CONTEXT] Could not allocate shared receive queue.\n");
+	INFINITY_ASSERT(this->ibvSharedReceiveQueue != nullptr, "[INFINITY][CORE][CONTEXT] Could not allocate shared receive queue.\n");
 
 	// Create a default request token
 	defaultRequestToken = new infinity::requests::RequestToken(this);
@@ -115,7 +115,7 @@ void Context::postReceiveBuffer(infinity::memory::Buffer* buffer) {
 	ibv_recv_wr wr;
 	memset(&wr, 0, sizeof(ibv_recv_wr));
 	wr.wr_id = reinterpret_cast<uint64_t>(buffer);
-	wr.next = NULL;
+	wr.next = nullptr;
 	wr.sg_list = &isge;
 	wr.num_sge = 1;
 
@@ -141,7 +141,7 @@ bool Context::receive(infinity::memory::Buffer** buffer, uint32_t *bytesWritten,
 			*(buffer) = reinterpret_cast<infinity::memory::Buffer*>(wc.wr_id);
 			*(bytesWritten) = wc.byte_len;
 		} else if (wc.opcode == IBV_WC_RECV_RDMA_WITH_IMM) {
-			*(buffer) = NULL;
+			*(buffer) = nullptr;
 			*(bytesWritten) = wc.byte_len;
 			infinity::memory::Buffer* receiveBuffer = reinterpret_cast<infinity::memory::Buffer*>(wc.wr_id);
 			this->postReceiveBuffer(receiveBuffer);
@@ -155,7 +155,7 @@ bool Context::receive(infinity::memory::Buffer** buffer, uint32_t *bytesWritten,
 			*(immediateValueValid) = false;
 		}
 
-		if(queuePair != NULL) {
+		if(queuePair != nullptr) {
 			*(queuePair) = queuePairMap.at(wc.qp_num);
 		}
 
@@ -172,7 +172,7 @@ bool Context::pollSendCompletionQueue() {
 	if (ibv_poll_cq(this->ibvSendCompletionQueue, 1, &wc) > 0) {
 
 		infinity::requests::RequestToken * request = reinterpret_cast<infinity::requests::RequestToken*>(wc.wr_id);
-		if (request != NULL) {
+		if (request != nullptr) {
 			request->setCompleted(wc.status == IBV_WC_SUCCESS);
 		}
 

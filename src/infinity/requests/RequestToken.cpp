@@ -15,8 +15,8 @@ RequestToken::RequestToken(infinity::core::Context *context) :
 		context(context) {
 	this->success.store(false);
 	this->completed.store(false);
-	this->region = NULL;
-	this->userData = NULL;
+	this->region = nullptr;
+	this->userData = nullptr;
 	this->userDataValid = false;
 	this->userDataSize = 0;
 	this->immediateValue = 0;
@@ -50,8 +50,8 @@ bool RequestToken::wasSuccessful() {
 void RequestToken::reset() {
 	this->success.store(false);
 	this->completed.store(false);
-	this->region = NULL;
-	this->userData = NULL;
+	this->region = nullptr;
+	this->userData = nullptr;
 	this->userDataValid = false;
 	this->userDataSize = 0;
 	this->immediateValue = 0;

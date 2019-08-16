@@ -12,7 +12,7 @@ namespace infinity {
 namespace memory {
 
 RegionToken::RegionToken() :
-	memoryRegion (NULL),
+	memoryRegion (nullptr),
 	memoryRegionType (UNKNOWN),
 	sizeInBytes(0),
 	address(0),

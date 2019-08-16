@@ -31,16 +31,16 @@ public:
 
 protected:
 
-	 infinity::core::Context* context;
+	 infinity::core::Context* context = nullptr;
 
-	 void *data;
-	 uint64_t sizeInBytes;
+	 void *data = 0;
+	 uint64_t sizeInBytes = 0;
 
-	 ibv_mr *ibvMemoryRegion;
+	 ibv_mr *ibvMemoryRegion = nullptr;
 
 protected:
 
-	 bool memoryAllocated;
+	 bool memoryAllocated = false;
 
 };
 
