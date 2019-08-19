@@ -18,13 +18,12 @@
 #include <infinity/memory/RegionToken.h>
 #include <infinity/requests/RequestToken.h>
 
-#define PORT_NUMBER 8011
-
 // Usage: ./progam -s for server and ./program for client component
 int main(int argc, char **argv) {
 
 	bool isServer = false;
-        const char *server_ip = "192.0.0.1";
+	int port_number = 8011;
+	const char *server_ip = "192.0.0.1";
 
 
 	while (argc > 1) {
@@ -35,11 +34,16 @@ int main(int argc, char **argv) {
 					isServer = true;
 					break;
 				}
-			         case 'h': {
+				 case 'h': {
 				   server_ip = argv[2];
 				   ++argv;
 				   --argc;
 				   break;
+				 }
+				  case 'p': {
+				   port_number = atoi(argv[2]);
+				   ++argv;
+				   --argc;
 				 }
 			}
 		}
@@ -62,7 +66,7 @@ int main(int argc, char **argv) {
 		context->postReceiveBuffer(bufferToReceive);
 
 		printf("Setting up connection (blocking)\n");
-		qpFactory->bindToPort(PORT_NUMBER);
+		qpFactory->bindToPort(port_number);
 		qp = qpFactory->acceptIncomingConnection(bufferToken, sizeof(infinity::memory::RegionToken));
 
 		printf("Waiting for message (blocking)\n");
@@ -76,7 +80,7 @@ int main(int argc, char **argv) {
 	} else {
 
 		printf("Connecting to remote node\n");
-		qp = qpFactory->connectToRemoteHost(server_ip, PORT_NUMBER);
+		qp = qpFactory->connectToRemoteHost(server_ip, port_number);
 		infinity::memory::RegionToken *remoteBufferToken = (infinity::memory::RegionToken *) qp->getUserData();
 
 

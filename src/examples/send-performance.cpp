@@ -20,7 +20,6 @@
 #include <infinity/memory/RegionToken.h>
 #include <infinity/requests/RequestToken.h>
 
-#define PORT_NUMBER 8011
 #define BUFFER_COUNT 128
 #define MAX_BUFFER_SIZE 4096
 #define OPERATIONS_COUNT 1024
@@ -30,6 +29,7 @@ uint64_t timeDiff(struct timeval stop, struct timeval start);
 // Usage: ./progam -s for server and ./program for client component
 int main(int argc, char **argv) {
 	bool isServer = false;
+	int port_number = 8011;
 	const char *server_ip = "192.0.0.1";
 
 	while (argc > 1) {
@@ -46,6 +46,11 @@ int main(int argc, char **argv) {
 			  --argc;
 			  break;
 			}
+			case 'p': {
+			  port_number = atoi(argv[2]);
+			  ++argv;
+			  --argc;
+			}  
 			}
 		}
 		++argv;
@@ -66,7 +71,7 @@ int main(int argc, char **argv) {
 		}
 
 		printf("Waiting for incoming connection\n");
-		qpFactory->bindToPort(PORT_NUMBER);
+		qpFactory->bindToPort(port_number);
 		qp = qpFactory->acceptIncomingConnection();
 
 		printf("Waiting for first message (first message has additional setup costs)\n");
@@ -110,8 +115,8 @@ int main(int argc, char **argv) {
 
 	} else {
 
-	        printf("Connecting to remote node %s:%d\n", server_ip, PORT_NUMBER);
-		qp = qpFactory->connectToRemoteHost(server_ip, PORT_NUMBER);
+	        printf("Connecting to remote node %s:%d\n", server_ip, port_number);
+		qp = qpFactory->connectToRemoteHost(server_ip, port_number);
 
 		printf("Creating buffers\n");
 		infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE * sizeof(char));
