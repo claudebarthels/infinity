@@ -50,6 +50,9 @@ protected:
 
 	int32_t serverSocket = 0;
 
+private:
+        int32_t readFromSocket(int32_t socket, char *buffer, uint32_t size);
+        int32_t sendToSocket(int32_t socket, const char *buffer, uint32_t size);
 };
 
 } /* namespace queues */

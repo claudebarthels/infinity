@@ -71,6 +71,35 @@ void QueuePairFactory::bindToPort(uint16_t port) {
 
 }
 
+int32_t QueuePairFactory::readFromSocket(int32_t socket, char *buffer, uint32_t size)
+{
+        int32_t bytesReceived = 0;
+	while (size) {
+	        int32_t returnValue = recv(socket, buffer, size, 0);
+		INFINITY_ASSERT(returnValue >= 0, "[INFINITY][QUEUES][FACTORY] Problem reading from socket: %s\n", strerror(errno));
+		if ((returnValue <= 0) && (errno != EINTR)) { return bytesReceived; }
+		size -= returnValue;
+		buffer += returnValue;
+		bytesReceived += returnValue;
+	}
+	return bytesReceived;
+}
+
+int32_t QueuePairFactory::sendToSocket(int32_t socket, const char *buffer, uint32_t size)
+{
+        int32_t bytesSent = 0;
+	while (size) {
+	        int32_t returnValue = send(socket, buffer, size, 0);
+		INFINITY_ASSERT(returnValue >= 0, "[INFINITY][QUEUES][FACTORY] Problem sending on socket: %s\n", strerror(errno));
+		if ((returnValue < 0) && (errno != EINTR)) { return bytesSent; }
+		size -= returnValue;
+		buffer += returnValue;
+		bytesSent += returnValue;
+	}
+	return bytesSent;
+}
+
+
 QueuePair * QueuePairFactory::acceptIncomingConnection(void *userData, uint32_t userDataSizeInBytes) {
 
 	INFINITY_ASSERT(userDataSizeInBytes < infinity::core::Configuration::MAX_CONNECTION_USER_DATA_SIZE,
@@ -82,7 +111,7 @@ QueuePair * QueuePairFactory::acceptIncomingConnection(void *userData, uint32_t 
 	int connectionSocket = accept(this->serverSocket, (sockaddr *) nullptr, nullptr);
 	INFINITY_ASSERT(connectionSocket >= 0, "[INFINITY][QUEUES][FACTORY] Cannot open connection socket.\n");
 
-	int32_t returnValue = recv(connectionSocket, receiveBuffer, sizeof(serializedQueuePair), 0);
+	int32_t returnValue = readFromSocket(connectionSocket, reinterpret_cast<char*>(receiveBuffer), sizeof(serializedQueuePair));
 	INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair), "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n",
 			sizeof(serializedQueuePair), returnValue);
 
@@ -94,7 +123,7 @@ QueuePair * QueuePairFactory::acceptIncomingConnection(void *userData, uint32_t 
 	sendBuffer->userDataSize = userDataSizeInBytes;
 	memcpy(sendBuffer->userData, userData, userDataSizeInBytes);
 
-	returnValue = send(connectionSocket, sendBuffer, sizeof(serializedQueuePair), 0);
+	returnValue = sendToSocket(connectionSocket, reinterpret_cast<const char*>(sendBuffer), sizeof(serializedQueuePair));
 	INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair),
 			"[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
 
@@ -143,11 +172,11 @@ QueuePair * QueuePairFactory::connectToRemoteHost(const char* hostAddress, uint1
 	sendBuffer->userDataSize = userDataSizeInBytes;
 	memcpy(sendBuffer->userData, userData, userDataSizeInBytes);
 
-	returnValue = send(connectionSocket, sendBuffer, sizeof(serializedQueuePair), 0);
+	returnValue = sendToSocket(connectionSocket, reinterpret_cast<char*>(sendBuffer), sizeof(serializedQueuePair));
 	INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair),
 			"[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
 
-	returnValue = recv(connectionSocket, receiveBuffer, sizeof(serializedQueuePair), 0);
+	returnValue = readFromSocket(connectionSocket, reinterpret_cast<char*>(receiveBuffer), sizeof(serializedQueuePair));
 	INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair),
 			"[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
 
