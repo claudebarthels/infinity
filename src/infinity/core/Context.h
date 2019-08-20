@@ -83,6 +83,9 @@ public:
 	void postReceiveBuffer(infinity::memory::Buffer *buffer);
 
 public:
+        void getDeviceAttr(ibv_device_attr * device_attr);
+
+public:
 
 	infinity::requests::RequestToken * defaultRequestToken = nullptr;
 	infinity::memory::Atomic * defaultAtomic = nullptr;

@@ -14,6 +14,7 @@
 namespace infinity {
 namespace core {
 
+class Context;
 class Configuration {
 
 public:
@@ -22,17 +23,17 @@ public:
 	 * Queue length settings
 	 */
 
-	static const uint32_t SEND_COMPLETION_QUEUE_LENGTH = 200; 		// Must be less than MAX_CQE
+	static const uint32_t sendCompletionQueueLength(Context * context); 		// Must be less than MAX_CQE
 
-	static const uint32_t RECV_COMPLETION_QUEUE_LENGTH = 200; 		// Must be less than MAX_CQE
+	static const uint32_t recvCompletionQueueLength(Context * context); 		// Must be less than MAX_CQE
 
-	static const uint32_t SHARED_RECV_QUEUE_LENGTH = 16351; 			// Must be less than MAX_SRQ_WR
+        static const uint32_t sharedRecvQueueLength(Context * context); 		// Must be less than MAX_SRQ_WR
 
-	static const uint32_t MAX_NUMBER_OF_OUTSTANDING_REQUESTS = 16351;	// Must be less than (MAX_QP_WR * MAX_QP)
-																		// Since we use one single shared receive queue,
-																		// this number should be less than MAX_SRQ_WR
+	static const uint32_t maxNumberOfOutstandingRequests(Context * context);      	// Must be less than (MAX_QP_WR * MAX_QP)
+									// Since we use one single shared receive queue,
+									// this number should be less than MAX_SRQ_WR
 
-	static const uint32_t MAX_NUMBER_OF_SGE_ELEMENTS = 1;				// Must be less than MAX_SGE
+        static const uint32_t maxNumberOfSGEElements(Context * context);		// Must be less than MAX_SGE
 
 public:
 
@@ -40,11 +41,11 @@ public:
 	 * System settings
 	 */
 
-	static const uint32_t PAGE_SIZE = 4096; 							// Memory regions will be page aligned by the Infinity library
+	static const uint32_t PAGE_SIZE = 4096; 			// Memory regions will be page aligned by the Infinity library
 
-	static const uint32_t MAX_CONNECTION_USER_DATA_SIZE = 1024;			// Size of the user data which can be transmitted when establishing a connection
+	static const uint32_t MAX_CONNECTION_USER_DATA_SIZE = 1024;	// Size of the user data which can be transmitted when establishing a connection
 
-	static constexpr const char* DEFAULT_IB_DEVICE = "ib0";				// Default name of IB device
+	static constexpr const char* DEFAULT_IB_DEVICE = "ib0";		// Default name of IB device
 
 };
 

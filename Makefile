@@ -29,6 +29,7 @@ EXAMPLES_FOLDER	= examples
 SOURCE_FILES =	$(SOURCE_FOLDER)/infinity/core/Context.cpp \
 						$(SOURCE_FOLDER)/infinity/memory/Atomic.cpp \
 						$(SOURCE_FOLDER)/infinity/memory/Buffer.cpp \
+						$(SOURCE_FOLDER)/infinity/core/Configuration.cpp \
 						$(SOURCE_FOLDER)/infinity/memory/Region.cpp \
 						$(SOURCE_FOLDER)/infinity/memory/RegionToken.cpp \
 						$(SOURCE_FOLDER)/infinity/memory/RegisteredMemory.cpp \

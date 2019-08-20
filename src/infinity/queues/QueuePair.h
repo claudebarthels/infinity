@@ -149,7 +149,7 @@ protected:
 
 	void *userData = nullptr;
 	uint32_t userDataSize = 0;
-
+        uint32_t maxNumberOfSGEElements = 0;
 };
 
 } /* namespace queues */

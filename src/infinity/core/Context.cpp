@@ -55,14 +55,14 @@ Context::Context(uint16_t device, uint16_t devicePort) {
 	this->ibvDevicePort = devicePort;
 
 	// Allocate completion queues
-	this->ibvSendCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::SEND_COMPLETION_QUEUE_LENGTH, 1), nullptr, nullptr, 0);
-	this->ibvReceiveCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::RECV_COMPLETION_QUEUE_LENGTH, 1), nullptr, nullptr, 0);
+	this->ibvSendCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::sendCompletionQueueLength(this), 1), nullptr, nullptr, 0);
+	this->ibvReceiveCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::recvCompletionQueueLength(this), 1), nullptr, nullptr, 0);
 
 	// Allocate shared receive queue
 	ibv_srq_init_attr sia;
 	memset(&sia, 0, sizeof(ibv_srq_init_attr));
 	sia.srq_context = this->ibvContext;
-	sia.attr.max_wr = MAX(Configuration::SHARED_RECV_QUEUE_LENGTH, 1);
+	sia.attr.max_wr = MAX(Configuration::sharedRecvQueueLength(this), 1);
 	sia.attr.max_sge = 1;
 	this->ibvSharedReceiveQueue = ibv_create_srq(this->ibvProtectionDomain, &sia);
 	INFINITY_ASSERT(this->ibvSharedReceiveQueue != nullptr, "[INFINITY][CORE][CONTEXT] Could not allocate shared receive queue.\n");
@@ -124,6 +124,13 @@ void Context::postReceiveBuffer(infinity::memory::Buffer* buffer) {
 	uint32_t returnValue = ibv_post_srq_recv(this->ibvSharedReceiveQueue, &wr, &badwr);
 	INFINITY_ASSERT(returnValue == 0, "[INFINITY][CORE][CONTEXT] Cannot post buffer to receive queue.\n");
 
+}
+
+void Context::getDeviceAttr(ibv_device_attr * device_attr)
+{
+        memset(device_attr, 0, sizeof(*device_attr));
+	int returnValue = ibv_query_device(getInfiniBandContext(), device_attr);
+	INFINITY_ASSERT(returnValue == 0, "[INFINITY][CORE][CONTEXT] Cannot get device attributes.\n");
 }
 
 bool Context::receive(receive_element_t* receiveElement) {

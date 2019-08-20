@@ -41,13 +41,14 @@ QueuePair::QueuePair(infinity::core::Context* context) :
 	ibv_qp_init_attr qpInitAttributes;
 	memset(&qpInitAttributes, 0, sizeof(qpInitAttributes));
 
+	maxNumberOfSGEElements = infinity::core::Configuration::maxNumberOfSGEElements(context);
 	qpInitAttributes.send_cq = context->getSendCompletionQueue();
 	qpInitAttributes.recv_cq = context->getReceiveCompletionQueue();
 	qpInitAttributes.srq = context->getSharedReceiveQueue();
-	qpInitAttributes.cap.max_send_wr = MAX(infinity::core::Configuration::SEND_COMPLETION_QUEUE_LENGTH, 1);
-	qpInitAttributes.cap.max_send_sge = infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS;
-	qpInitAttributes.cap.max_recv_wr = MAX(infinity::core::Configuration::RECV_COMPLETION_QUEUE_LENGTH, 1);
-	qpInitAttributes.cap.max_recv_sge = infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS;
+	qpInitAttributes.cap.max_send_wr = MAX(infinity::core::Configuration::sendCompletionQueueLength(context), 1);
+	qpInitAttributes.cap.max_send_sge = maxNumberOfSGEElements;
+	qpInitAttributes.cap.max_recv_wr = MAX(infinity::core::Configuration::recvCompletionQueueLength(context), 1);
+	qpInitAttributes.cap.max_recv_sge = maxNumberOfSGEElements;
 	qpInitAttributes.qp_type = IBV_QPT_RC;
 	qpInitAttributes.sq_sig_all = 0;
 
@@ -337,7 +338,7 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 	struct ibv_send_wr workRequest;
 	struct ibv_send_wr *badWorkRequest;
 
-	INFINITY_ASSERT(numberOfElements <= infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS, "[INFINITY][QUEUES][QUEUEPAIR] Request contains too many SGE.\n");
+	INFINITY_ASSERT(numberOfElements <= maxNumberOfSGEElements, "[INFINITY][QUEUES][QUEUEPAIR] Request contains too many SGE.\n");
 
 	uint32_t totalSizeInBytes = 0;
 	for (uint32_t i = 0; i < numberOfElements; ++i) {
@@ -390,7 +391,7 @@ void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint
 	struct ibv_send_wr workRequest;
 	struct ibv_send_wr *badWorkRequest;
 
-	INFINITY_ASSERT(numberOfElements <= infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS, "[INFINITY][QUEUES][QUEUEPAIR] Request contains too many SGE.\n");
+	INFINITY_ASSERT(numberOfElements <= maxNumberOfSGEElements, "[INFINITY][QUEUES][QUEUEPAIR] Request contains too many SGE.\n");
 
 	uint32_t totalSizeInBytes = 0;
 	for (uint32_t i = 0; i < numberOfElements; ++i) {
