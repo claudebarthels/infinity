@@ -109,5 +109,21 @@ void Buffer::resize(uint64_t newSize, void* newData) {
 	}
 }
 
+Buffer& Buffer::operator=(Buffer&& other)
+{
+  	if (&other != this) {
+		data = other.data;
+		sizeInBytes = other.sizeInBytes;
+		memoryRegistered = other.memoryRegistered;
+		memoryAllocated = other.memoryAllocated;
+		other.data = nullptr;
+		other.sizeInBytes = 0;
+		other.memoryRegistered = false;
+		other.memoryAllocated = false;
+	}
+	return *this;
+}
+
+
 } /* namespace memory */
 } /* namespace infinity */

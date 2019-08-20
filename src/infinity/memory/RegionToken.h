@@ -20,28 +20,27 @@ class RegionToken {
 
 public:
 
-	RegionToken();
-	RegionToken(Region *memoryRegion, RegionType memoryRegionType, uint64_t sizeInBytes, uint64_t address, uint32_t localKey, uint32_t remoteKey);
+        RegionToken(Region *memoryRegion, RegionType memoryRegionType, uint64_t sizeInBytes, uint64_t address, uint32_t localKey, uint32_t remoteKey);
 
 public:
 
-	Region * getMemoryRegion();
-	RegionType getMemoryRegionType();
-	uint64_t getSizeInBytes();
-	uint64_t getRemainingSizeInBytes(uint64_t offset);
-	uint64_t getAddress();
-	uint64_t getAddressWithOffset(uint64_t offset);
-	uint32_t getLocalKey();
-	uint32_t getRemoteKey();
+        Region * getMemoryRegion();
+        RegionType getMemoryRegionType();
+        uint64_t getSizeInBytes();
+        uint64_t getRemainingSizeInBytes(uint64_t offset);
+        uint64_t getAddress();
+        uint64_t getAddressWithOffset(uint64_t offset);
+        uint32_t getLocalKey();
+        uint32_t getRemoteKey();
 
 protected:
 
-	Region *memoryRegion = nullptr;
-	const RegionType memoryRegionType;
-	const uint64_t sizeInBytes;
-	const uint64_t address;
-	const uint32_t localKey;
-	const uint32_t remoteKey;
+        Region *memoryRegion = nullptr;
+        const RegionType memoryRegionType = UNKNOWN;
+        const uint64_t sizeInBytes = 0;
+        const uint64_t address = 0;
+        const uint32_t localKey = 0;
+        const uint32_t remoteKey = 0;
 
 };
 

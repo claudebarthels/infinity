@@ -28,6 +28,10 @@ public:
 
 	 ibv_mr * getRegion();
 
+	 RegisteredMemory(const RegisteredMemory&) = delete;
+	 RegisteredMemory(const RegisteredMemory&&) = delete;
+	 RegisteredMemory& operator=(const RegisteredMemory&) = delete;
+	 RegisteredMemory& operator=(RegisteredMemory&&other) = delete;
 
 protected:
 

@@ -44,6 +44,11 @@ public:
 	void* getUserData();
 	uint32_t getUserDataSize();
 
+	RequestToken(const RequestToken&) = delete;
+	RequestToken(const RequestToken&&) = delete;
+	RequestToken& operator=(const RequestToken&) = delete;
+	RequestToken& operator=(RequestToken&&) = delete;
+
 protected:
 
 	infinity::core::Context * const context = nullptr;

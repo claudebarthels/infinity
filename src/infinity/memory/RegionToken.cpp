@@ -11,18 +11,6 @@
 namespace infinity {
 namespace memory {
 
-RegionToken::RegionToken() :
-	memoryRegion (nullptr),
-	memoryRegionType (UNKNOWN),
-	sizeInBytes(0),
-	address(0),
-	localKey(0),
-	remoteKey(0) {
-
-	// Nothing to do here
-
-}
-
 RegionToken::RegionToken(Region *memoryRegion, RegionType memoryRegionType, uint64_t sizeInBytes, uint64_t address, uint32_t localKey, uint32_t remoteKey) :
 	memoryRegion (memoryRegion),
 	memoryRegionType (memoryRegionType),

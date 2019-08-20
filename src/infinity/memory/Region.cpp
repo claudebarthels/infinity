@@ -14,6 +14,10 @@
 namespace infinity {
 namespace memory {
 
+Region::Region() {
+
+}
+
 Region::~Region() {
 	// To be overwritten in sub class
 }

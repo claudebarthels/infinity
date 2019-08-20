@@ -13,7 +13,7 @@ PROJECT_NAME = libinfinity
 ##################################################
 
 CC 					= g++
-CC_FLAGS 		= -g -O3 -std=c++0x -DINFINITY_DEBUG_ON -DINFINITY_ASSERT_ON
+CC_FLAGS 		= -g -O3 -std=c++14 -DINFINITY_DEBUG_ON -DINFINITY_ASSERT_ON
 LD_FLAGS		= -linfinity -libverbs
 
 ##################################################
@@ -91,5 +91,6 @@ examples:
 	mkdir -p $(RELEASE_FOLDER)/$(EXAMPLES_FOLDER)
 	$(CC) src/examples/read-write-send.cpp $(CC_FLAGS) $(LD_FLAGS) -I $(RELEASE_FOLDER)/$(INCLUDE_FOLDER) -L $(RELEASE_FOLDER) -o $(RELEASE_FOLDER)/$(EXAMPLES_FOLDER)/read-write-send
 	$(CC) src/examples/send-performance.cpp $(CC_FLAGS) $(LD_FLAGS) -I $(RELEASE_FOLDER)/$(INCLUDE_FOLDER) -L $(RELEASE_FOLDER) -o $(RELEASE_FOLDER)/$(EXAMPLES_FOLDER)/send-performance
+	$(CC) src/examples/read-performance.cpp $(CC_FLAGS) $(LD_FLAGS) -I $(RELEASE_FOLDER)/$(INCLUDE_FOLDER) -L $(RELEASE_FOLDER) -o $(RELEASE_FOLDER)/$(EXAMPLES_FOLDER)/read-performance
 
 ##################################################

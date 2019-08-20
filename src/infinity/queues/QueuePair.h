@@ -57,6 +57,11 @@ public:
 	 */
 	~QueuePair();
 
+	QueuePair(const QueuePair&) = delete;
+	QueuePair(const QueuePair&&) = delete;
+	QueuePair& operator=(const QueuePair&) = delete;
+	QueuePair& operator=(QueuePair&&) = delete;
+
 protected:
 
 	/**
@@ -95,7 +100,7 @@ public:
 	void send(infinity::memory::Buffer *buffer, infinity::requests::RequestToken *requestToken = nullptr);
 	void send(infinity::memory::Buffer *buffer, uint32_t sizeInBytes, infinity::requests::RequestToken *requestToken = nullptr);
 	void send(infinity::memory::Buffer *buffer, uint64_t localOffset, uint32_t sizeInBytes, OperationFlags flags,
-      infinity::requests::RequestToken *requestToken = nullptr);
+		  infinity::requests::RequestToken *requestToken = nullptr);
 
 	void write(infinity::memory::Buffer *buffer, infinity::memory::RegionToken *destination, infinity::requests::RequestToken *requestToken = nullptr);
 	void write(infinity::memory::Buffer *buffer, infinity::memory::RegionToken *destination, uint32_t sizeInBytes,
@@ -149,7 +154,7 @@ protected:
 
 	void *userData = nullptr;
 	uint32_t userDataSize = 0;
-        uint32_t maxNumberOfSGEElements = 0;
+	uint32_t maxNumberOfSGEElements = 0;
 };
 
 } /* namespace queues */

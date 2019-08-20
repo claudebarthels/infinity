@@ -21,7 +21,7 @@
 #include <infinity/requests/RequestToken.h>
 
 #define BUFFER_COUNT 128
-#define MAX_BUFFER_SIZE 4096
+#define MAX_BUFFER_SIZE 4096*8*4*4*4
 #define OPERATIONS_COUNT 1024
 
 uint64_t timeDiff(struct timeval stop, struct timeval start);
