@@ -22,16 +22,16 @@ Region::~Region() {
 	// To be overwritten in sub class
 }
 
-RegionToken* Region::createRegionToken() {
-	return new RegionToken(this, getMemoryRegionType(), getSizeInBytes(), getAddress(), getLocalKey(), getRemoteKey());
+RegionToken Region::createRegionToken() {
+	return RegionToken(this, getMemoryRegionType(), getSizeInBytes(), getAddress(), getLocalKey(), getRemoteKey());
 }
 
-RegionToken * Region::createRegionToken(uint64_t offset) {
-	return new RegionToken(this, getMemoryRegionType(), getRemainingSizeInBytes(offset), getAddressWithOffset(offset), getLocalKey(), getRemoteKey());
+RegionToken Region::createRegionToken(uint64_t offset) {
+	return RegionToken(this, getMemoryRegionType(), getRemainingSizeInBytes(offset), getAddressWithOffset(offset), getLocalKey(), getRemoteKey());
 }
 
-RegionToken * Region::createRegionToken(uint64_t offset, uint64_t size) {
-	return new RegionToken(this, getMemoryRegionType(), size, getAddressWithOffset(offset), getLocalKey(), getRemoteKey());
+RegionToken Region::createRegionToken(uint64_t offset, uint64_t size) {
+	return RegionToken(this, getMemoryRegionType(), size, getAddressWithOffset(offset), getLocalKey(), getRemoteKey());
 }
 
 RegionType Region::getMemoryRegionType() {

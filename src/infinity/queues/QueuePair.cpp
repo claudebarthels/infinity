@@ -228,17 +228,17 @@ void QueuePair::sendWithImmediate(infinity::memory::Buffer* buffer, uint64_t loc
 
 }
 
-void QueuePair::write(infinity::memory::Buffer* buffer, infinity::memory::RegionToken* destination, infinity::requests::RequestToken *requestToken) {
+void QueuePair::write(infinity::memory::Buffer* buffer, const infinity::memory::RegionToken& destination, infinity::requests::RequestToken *requestToken) {
 	write(buffer, 0, destination, 0, buffer->getSizeInBytes(), OperationFlags(), requestToken);
 	INFINITY_ASSERT(buffer->getSizeInBytes() <= ((uint64_t) UINT32_MAX), "[INFINITY][QUEUES][QUEUEPAIR] Request must be smaller or equal to UINT_32_MAX bytes. This memory region is larger. Please explicitly indicate the size of the data to transfer.\n");
 }
 
-void QueuePair::write(infinity::memory::Buffer* buffer, infinity::memory::RegionToken* destination, uint32_t sizeInBytes,
+void QueuePair::write(infinity::memory::Buffer* buffer, const infinity::memory::RegionToken& destination, uint32_t sizeInBytes,
 		infinity::requests::RequestToken *requestToken) {
 	write(buffer, 0, destination, 0, sizeInBytes, OperationFlags(), requestToken);
 }
 
-void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* destination, uint64_t remoteOffset,
+void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, const infinity::memory::RegionToken& destination, uint64_t remoteOffset,
 		uint32_t sizeInBytes, OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
 	if (requestToken != nullptr) {
@@ -267,10 +267,10 @@ void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, in
 	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
-	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
-	workRequest.wr.rdma.rkey = destination->getRemoteKey();
+	workRequest.wr.rdma.remote_addr = destination.getAddress() + remoteOffset;
+	workRequest.wr.rdma.rkey = destination.getRemoteKey();
 
-	INFINITY_ASSERT(sizeInBytes <= destination->getRemainingSizeInBytes(remoteOffset),
+	INFINITY_ASSERT(sizeInBytes <= destination.getRemainingSizeInBytes(remoteOffset),
 			"[INFINITY][QUEUES][QUEUEPAIR] Segmentation fault while writing to remote memory.\n");
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);
@@ -281,7 +281,7 @@ void QueuePair::write(infinity::memory::Buffer* buffer, uint64_t localOffset, in
 
 }
 
-void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* destination, uint64_t remoteOffset,
+void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t localOffset, const infinity::memory::RegionToken& destination, uint64_t remoteOffset,
 		uint32_t sizeInBytes, uint32_t immediateValue, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
 
 	if (requestToken != nullptr) {
@@ -312,10 +312,10 @@ void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t lo
 	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
-	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
-	workRequest.wr.rdma.rkey = destination->getRemoteKey();
+	workRequest.wr.rdma.remote_addr = destination.getAddress() + remoteOffset;
+	workRequest.wr.rdma.rkey = destination.getRemoteKey();
 
-	INFINITY_ASSERT(sizeInBytes <= destination->getRemainingSizeInBytes(remoteOffset),
+	INFINITY_ASSERT(sizeInBytes <= destination.getRemainingSizeInBytes(remoteOffset),
 			"[INFINITY][QUEUES][QUEUEPAIR] Segmentation fault while writing to remote memory.\n");
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);
@@ -327,7 +327,7 @@ void QueuePair::writeWithImmediate(infinity::memory::Buffer* buffer, uint64_t lo
 }
 
 void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesInBytes, uint64_t* localOffsets, uint32_t numberOfElements,
-		infinity::memory::RegionToken* destination, uint64_t remoteOffset, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
+		const infinity::memory::RegionToken& destination, uint64_t remoteOffset, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
 
 	if (requestToken != nullptr) {
 		requestToken->reset();
@@ -365,10 +365,10 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
-	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
-	workRequest.wr.rdma.rkey = destination->getRemoteKey();
+	workRequest.wr.rdma.remote_addr = destination.getAddress() + remoteOffset;
+	workRequest.wr.rdma.rkey = destination.getRemoteKey();
 
-	INFINITY_ASSERT(totalSizeInBytes <= destination->getRemainingSizeInBytes(remoteOffset),
+	INFINITY_ASSERT(totalSizeInBytes <= destination.getRemainingSizeInBytes(remoteOffset),
 			"[INFINITY][QUEUES][QUEUEPAIR] Segmentation fault while writing to remote memory.\n");
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);
@@ -379,7 +379,7 @@ void QueuePair::multiWrite(infinity::memory::Buffer** buffers, uint32_t* sizesIn
 }
 
 void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint32_t* sizesInBytes, uint64_t* localOffsets, uint32_t numberOfElements,
-		infinity::memory::RegionToken* destination, uint64_t remoteOffset, uint32_t immediateValue, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
+		const infinity::memory::RegionToken& destination, uint64_t remoteOffset, uint32_t immediateValue, OperationFlags send_flags, infinity::requests::RequestToken* requestToken) {
 
 	if (requestToken != nullptr) {
 		requestToken->reset();
@@ -419,10 +419,10 @@ void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint
 	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
-	workRequest.wr.rdma.remote_addr = destination->getAddress() + remoteOffset;
-	workRequest.wr.rdma.rkey = destination->getRemoteKey();
+	workRequest.wr.rdma.remote_addr = destination.getAddress() + remoteOffset;
+	workRequest.wr.rdma.rkey = destination.getRemoteKey();
 
-	INFINITY_ASSERT(totalSizeInBytes <= destination->getRemainingSizeInBytes(remoteOffset),
+	INFINITY_ASSERT(totalSizeInBytes <= destination.getRemainingSizeInBytes(remoteOffset),
 			"[INFINITY][QUEUES][QUEUEPAIR] Segmentation fault while writing to remote memory.\n");
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);
@@ -433,17 +433,17 @@ void QueuePair::multiWriteWithImmediate(infinity::memory::Buffer** buffers, uint
 
 }
 
-void QueuePair::read(infinity::memory::Buffer* buffer, infinity::memory::RegionToken* source, infinity::requests::RequestToken *requestToken) {
+void QueuePair::read(infinity::memory::Buffer* buffer, const infinity::memory::RegionToken& source, infinity::requests::RequestToken *requestToken) {
 	read(buffer, 0, source, 0, buffer->getSizeInBytes(), OperationFlags(), requestToken);
 	INFINITY_ASSERT(buffer->getSizeInBytes() <= ((uint64_t) UINT32_MAX), "[INFINITY][QUEUES][QUEUEPAIR] Request must be smaller or equal to UINT_32_MAX bytes. This memory region is larger. Please explicitly indicate the size of the data to transfer.\n");
 }
 
-void QueuePair::read(infinity::memory::Buffer* buffer, infinity::memory::RegionToken* source, uint32_t sizeInBytes,
+void QueuePair::read(infinity::memory::Buffer* buffer, const infinity::memory::RegionToken& source, uint32_t sizeInBytes,
 		infinity::requests::RequestToken *requestToken) {
 	read(buffer, 0, source, 0, sizeInBytes, OperationFlags(), requestToken);
 }
 
-void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, infinity::memory::RegionToken* source, uint64_t remoteOffset, uint32_t sizeInBytes,
+void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, const infinity::memory::RegionToken& source, uint64_t remoteOffset, uint32_t sizeInBytes,
 		OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
 	if (requestToken != nullptr) {
@@ -472,10 +472,10 @@ void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, inf
 	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
-	workRequest.wr.rdma.remote_addr = source->getAddress() + remoteOffset;
-	workRequest.wr.rdma.rkey = source->getRemoteKey();
+	workRequest.wr.rdma.remote_addr = source.getAddress() + remoteOffset;
+	workRequest.wr.rdma.rkey = source.getRemoteKey();
 
-	INFINITY_ASSERT(sizeInBytes <= source->getRemainingSizeInBytes(remoteOffset),
+	INFINITY_ASSERT(sizeInBytes <= source.getRemainingSizeInBytes(remoteOffset),
 			"[INFINITY][QUEUES][QUEUEPAIR] Segmentation fault while reading from remote memory.\n");
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);
@@ -486,7 +486,7 @@ void QueuePair::read(infinity::memory::Buffer* buffer, uint64_t localOffset, inf
 
 }
 
-void QueuePair::compareAndSwap(infinity::memory::RegionToken* destination, infinity::memory::Atomic* previousValue, uint64_t compare, uint64_t swap,
+void QueuePair::compareAndSwap(const infinity::memory::RegionToken& destination, infinity::memory::Atomic* previousValue, uint64_t compare, uint64_t swap,
 		OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
 	if (requestToken != nullptr) {
@@ -512,8 +512,8 @@ void QueuePair::compareAndSwap(infinity::memory::RegionToken* destination, infin
 	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
-	workRequest.wr.atomic.remote_addr = destination->getAddress();
-	workRequest.wr.atomic.rkey = destination->getRemoteKey();
+	workRequest.wr.atomic.remote_addr = destination.getAddress();
+	workRequest.wr.atomic.rkey = destination.getRemoteKey();
 	workRequest.wr.atomic.compare_add = compare;
 	workRequest.wr.atomic.swap = swap;
 
@@ -525,15 +525,15 @@ void QueuePair::compareAndSwap(infinity::memory::RegionToken* destination, infin
 
 }
 
-void QueuePair::compareAndSwap(infinity::memory::RegionToken* destination, uint64_t compare, uint64_t swap, infinity::requests::RequestToken *requestToken) {
+void QueuePair::compareAndSwap(const infinity::memory::RegionToken& destination, uint64_t compare, uint64_t swap, infinity::requests::RequestToken *requestToken) {
 	compareAndSwap(destination, context->defaultAtomic, compare, swap, OperationFlags(), requestToken);
 }
 
-void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, uint64_t add, infinity::requests::RequestToken *requestToken) {
+void QueuePair::fetchAndAdd(const infinity::memory::RegionToken& destination, uint64_t add, infinity::requests::RequestToken *requestToken) {
 	fetchAndAdd(destination, context->defaultAtomic, add, OperationFlags(), requestToken);
 }
 
-void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, infinity::memory::Atomic* previousValue, uint64_t add,
+void QueuePair::fetchAndAdd(const infinity::memory::RegionToken& destination, infinity::memory::Atomic* previousValue, uint64_t add,
 		OperationFlags send_flags, infinity::requests::RequestToken *requestToken) {
 
 	if (requestToken != nullptr) {
@@ -559,8 +559,8 @@ void QueuePair::fetchAndAdd(infinity::memory::RegionToken* destination, infinity
 	if (requestToken != nullptr) {
 		workRequest.send_flags |= IBV_SEND_SIGNALED;
 	}
-	workRequest.wr.atomic.remote_addr = destination->getAddress();
-	workRequest.wr.atomic.rkey = destination->getRemoteKey();
+	workRequest.wr.atomic.remote_addr = destination.getAddress();
+	workRequest.wr.atomic.rkey = destination.getRemoteKey();
 	workRequest.wr.atomic.compare_add = add;
 
 	int returnValue = ibv_post_send(this->ibvQueuePair, &workRequest, &badWorkRequest);

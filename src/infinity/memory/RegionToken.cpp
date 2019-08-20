@@ -23,35 +23,35 @@ RegionToken::RegionToken(Region *memoryRegion, RegionType memoryRegionType, uint
 
 }
 
-Region* RegionToken::getMemoryRegion() {
+Region* RegionToken::getMemoryRegion() const {
 	return memoryRegion;
 }
 
-RegionType RegionToken::getMemoryRegionType() {
+RegionType RegionToken::getMemoryRegionType() const {
 	return this->memoryRegionType;
 }
 
-uint64_t RegionToken::getSizeInBytes() {
+uint64_t RegionToken::getSizeInBytes() const {
 	return this->sizeInBytes;
 }
 
-uint64_t RegionToken::getRemainingSizeInBytes(uint64_t offset) {
+uint64_t RegionToken::getRemainingSizeInBytes(uint64_t offset) const {
 	return this->sizeInBytes-offset;
 }
 
-uint64_t RegionToken::getAddress() {
+uint64_t RegionToken::getAddress() const {
 	return address;
 }
 
-uint64_t RegionToken::getAddressWithOffset(uint64_t offset) {
+uint64_t RegionToken::getAddressWithOffset(uint64_t offset) const {
 	return address + offset;
 }
 
-uint32_t RegionToken::getLocalKey() {
+uint32_t RegionToken::getLocalKey() const {
 	return this->localKey;
 }
 
-uint32_t RegionToken::getRemoteKey() {
+uint32_t RegionToken::getRemoteKey() const {
 	return this->remoteKey;
 }
 

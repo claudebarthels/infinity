@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
 
 		printf("Creating buffers to read from and write to\n");
 		infinity::memory::Buffer *bufferToReadWrite = new infinity::memory::Buffer(context, 128);
-		infinity::memory::RegionToken *bufferToken = bufferToReadWrite->createRegionToken();
+		infinity::memory::RegionToken bufferToken = bufferToReadWrite->createRegionToken();
 
 		printf("Creating buffers to receive a message\n");
 		infinity::memory::Buffer *bufferToReceive = new infinity::memory::Buffer(context, 128);
@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
 
 		printf("Setting up connection (blocking)\n");
 		qpFactory->bindToPort(port_number);
-		qp = qpFactory->acceptIncomingConnection(bufferToken, sizeof(infinity::memory::RegionToken));
+		qp = qpFactory->acceptIncomingConnection(&bufferToken, sizeof(bufferToken));
 		printf("Waiting for message (blocking)\n");
 		infinity::core::receive_element_t receiveElement;
 		while(!context->receive(&receiveElement));
@@ -89,11 +89,11 @@ int main(int argc, char **argv) {
 
 		printf("Reading content from remote buffer\n");
 		infinity::requests::RequestToken requestToken(context);
-		qp->read(buffer1Sided, remoteBufferToken, &requestToken);
+		qp->read(buffer1Sided, *remoteBufferToken, &requestToken);
 		requestToken.waitUntilCompleted();
 
 		printf("Writing content to remote buffer\n");
-		qp->write(buffer1Sided, remoteBufferToken, &requestToken);
+		qp->write(buffer1Sided, *remoteBufferToken, &requestToken);
 		requestToken.waitUntilCompleted();
 
 		printf("Sending message to remote host\n");

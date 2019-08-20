@@ -24,14 +24,14 @@ public:
 
 public:
 
-        Region * getMemoryRegion();
-        RegionType getMemoryRegionType();
-        uint64_t getSizeInBytes();
-        uint64_t getRemainingSizeInBytes(uint64_t offset);
-        uint64_t getAddress();
-        uint64_t getAddressWithOffset(uint64_t offset);
-        uint32_t getLocalKey();
-        uint32_t getRemoteKey();
+        Region * getMemoryRegion() const;
+        RegionType getMemoryRegionType() const;
+        uint64_t getSizeInBytes() const;
+        uint64_t getRemainingSizeInBytes(uint64_t offset) const;
+        uint64_t getAddress() const;
+        uint64_t getAddressWithOffset(uint64_t offset) const;
+        uint32_t getLocalKey() const;
+        uint32_t getRemoteKey() const;
 
 protected:
 

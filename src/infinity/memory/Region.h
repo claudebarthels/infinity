@@ -26,9 +26,9 @@ public:
 	Region();
 	virtual ~Region();
 
-	RegionToken * createRegionToken();
-	RegionToken * createRegionToken(uint64_t offset);
-	RegionToken * createRegionToken(uint64_t offset, uint64_t size);
+	RegionToken createRegionToken();
+	RegionToken createRegionToken(uint64_t offset);
+	RegionToken createRegionToken(uint64_t offset, uint64_t size);
 
 public:
 
