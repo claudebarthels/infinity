@@ -6,8 +6,8 @@
  *
  */
 
+#include <iomanip>
 #include <stdlib.h>
-#include <stdio.h>
 #include <unistd.h>
 #include <math.h>
 #include <time.h>
@@ -63,31 +63,30 @@ int main(int argc, char **argv) {
 
 	if (isServer) {
 
-		printf("Creating buffers to receive a messages\n");
+		std::cout << "Creating buffers to receive a messages\n";
 		infinity::memory::Buffer **receiveBuffers = new infinity::memory::Buffer *[BUFFER_COUNT];
 		for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
 			receiveBuffers[i] = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE);
 			context->postReceiveBuffer(receiveBuffers[i]);
 		}
 
-		printf("Waiting for incoming connection\n");
+		std::cout << "Waiting for incoming connection\n";
 		qpFactory->bindToPort(port_number);
 		qp = qpFactory->acceptIncomingConnection();
 
-		printf("Waiting for first message (first message has additional setup costs)\n");
+		std::cout << "Waiting for first message (first message has additional setup costs)\n";
 		infinity::core::receive_element_t receiveElement;
 		while (!context->receive(&receiveElement));
 		context->postReceiveBuffer(receiveElement.buffer);
 
-		printf("Performing measurement\n");
+		std::cout << "Performing measurement\n";
 
 		uint32_t messageSize = 1;
 		uint32_t rounds = (uint32_t) log2(MAX_BUFFER_SIZE);
 
 		for(uint32_t sizeIndex = 0; sizeIndex <= rounds; ++sizeIndex) {
 
-			printf("Receiving messages of size %d bytes\n", messageSize);
-			fflush(stdout);
+		        std::cout << "Receiving messages of size " << messageSize << " bytes" << std::endl;
 
 			uint32_t numberOfReceivedMessages = 0;
 			while (numberOfReceivedMessages < OPERATIONS_COUNT) {
@@ -99,14 +98,14 @@ int main(int argc, char **argv) {
 			messageSize *= 2;
 		}
 
-		printf("All messages received\n");
+		std::cout << "All messages received\n";
 
-		printf("Sending notification to client\n");
+		std::cout << "Sending notification to client\n";
 		infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, 1);
 		qp->send(sendBuffer, context->defaultRequestToken);
 		context->defaultRequestToken->waitUntilCompleted();
 
-		printf("Clean up\n");
+		std::cout << "Clean up\n";
 		for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
 			delete receiveBuffers[i];
 		}
@@ -115,26 +114,25 @@ int main(int argc, char **argv) {
 
 	} else {
 
-	        printf("Connecting to remote node %s:%d\n", server_ip, port_number);
+	        std::cout << "Connecting to remote node " << server_ip << ":" << port_number << "\n";
 		qp = qpFactory->connectToRemoteHost(server_ip, port_number);
 
-		printf("Creating buffers\n");
+		std::cout << "Creating buffers\n";
 		infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE);
 		infinity::memory::Buffer *receiveBuffer = new infinity::memory::Buffer(context, 1);
 		context->postReceiveBuffer(receiveBuffer);
 
-		printf("Sending first message\n");
+		std::cout << "Sending first message\n";
 		qp->send(sendBuffer, sendBuffer->getSizeInBytes(), context->defaultRequestToken);
 		context->defaultRequestToken->waitUntilCompleted();
 
-		printf("Performing measurement\n");
+		std::cout << "Performing measurement\n";
 		uint32_t rounds = (uint32_t) log2(MAX_BUFFER_SIZE);
 		uint32_t messageSize = 1;
 
 		for(uint32_t sizeIndex = 0; sizeIndex <= rounds; ++sizeIndex) {
 
-			printf("Sending messages of size %d bytes\t", messageSize);
-			fflush(stdout);
+		        std::cout << "Sending messages of size " << messageSize << " bytes\t";
 
 			struct timeval start;
 			gettimeofday(&start, nullptr);
@@ -159,14 +157,13 @@ int main(int argc, char **argv) {
 			uint64_t time = timeDiff(stop, start);
 			double msgRate = ((double)(OPERATIONS_COUNT * 1000000L)) / time;
 			double bandwidth = ((double) (OPERATIONS_COUNT * messageSize)) / (1024*1024) / (((double) time) / 1000000L);
-			printf("%.3f msg/sec\t%.3f MB/sec\n", msgRate, bandwidth);
-			fflush(stdout);
+			std::cout << std::setprecision(3) << std::fixed  << msgRate << " msg/sec\t" << bandwidth << " MB/sec" << std::endl;
 
 			messageSize *= 2;
 
 		}
 
-		printf("Waiting for notification from server\n");
+		std::cout << "Waiting for notification from server\n";
 		infinity::core::receive_element_t receiveElement;
 		while (!context->receive(&receiveElement));
 

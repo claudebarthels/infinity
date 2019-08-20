@@ -9,6 +9,7 @@
 #ifndef MEMORY_REGIONTOKEN_H_
 #define MEMORY_REGIONTOKEN_H_
 
+#include <iostream>
 #include <stdint.h>
 #include <infinity/memory/RegionType.h>
 #include <infinity/memory/Region.h>
@@ -43,7 +44,8 @@ protected:
         const uint32_t remoteKey = 0;
 
 };
-
+  
+std::ostream& operator << (std::ostream &os, const RegionToken& regionToken);
 } /* namespace memory */
 } /* namespace infinity */
 

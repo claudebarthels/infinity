@@ -55,6 +55,14 @@ uint32_t RegionToken::getRemoteKey() const {
 	return this->remoteKey;
 }
 
+std::ostream& operator << (std::ostream &os, const RegionToken& regionToken)
+{
+  os << "size: " << regionToken.getSizeInBytes()
+     << " address " << regionToken.getAddress()
+     << " localKey " << regionToken.getLocalKey()
+     << " remoteKey " << regionToken.getRemoteKey();
+  return os;
+}
 
 } /* namespace memory */
 } /* namespace infinity */
