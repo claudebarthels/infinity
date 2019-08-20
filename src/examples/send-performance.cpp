@@ -66,7 +66,7 @@ int main(int argc, char **argv) {
 		printf("Creating buffers to receive a messages\n");
 		infinity::memory::Buffer **receiveBuffers = new infinity::memory::Buffer *[BUFFER_COUNT];
 		for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
-			receiveBuffers[i] = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE * sizeof(char));
+			receiveBuffers[i] = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE);
 			context->postReceiveBuffer(receiveBuffers[i]);
 		}
 
@@ -102,7 +102,7 @@ int main(int argc, char **argv) {
 		printf("All messages received\n");
 
 		printf("Sending notification to client\n");
-		infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, sizeof(char));
+		infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, 1);
 		qp->send(sendBuffer, context->defaultRequestToken);
 		context->defaultRequestToken->waitUntilCompleted();
 
@@ -119,12 +119,12 @@ int main(int argc, char **argv) {
 		qp = qpFactory->connectToRemoteHost(server_ip, port_number);
 
 		printf("Creating buffers\n");
-		infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE * sizeof(char));
-		infinity::memory::Buffer *receiveBuffer = new infinity::memory::Buffer(context, sizeof(char));
+		infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE);
+		infinity::memory::Buffer *receiveBuffer = new infinity::memory::Buffer(context, 1);
 		context->postReceiveBuffer(receiveBuffer);
 
 		printf("Sending first message\n");
-		qp->send(sendBuffer, sizeof(char), context->defaultRequestToken);
+		qp->send(sendBuffer, sendBuffer->getSizeInBytes(), context->defaultRequestToken);
 		context->defaultRequestToken->waitUntilCompleted();
 
 		printf("Performing measurement\n");
