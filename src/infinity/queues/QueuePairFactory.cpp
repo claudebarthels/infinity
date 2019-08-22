@@ -101,48 +101,46 @@ int32_t QueuePairFactory::sendToSocket(int32_t socket, const char *buffer, uint3
 
 QueuePair * QueuePairFactory::acceptIncomingConnection(void *userData, uint32_t userDataSizeInBytes) {
 
-        serializedQueuePair *receiveBuffer = (serializedQueuePair*) calloc(1, sizeof(serializedQueuePair));
-        serializedQueuePair *sendBuffer = (serializedQueuePair*) calloc(1, sizeof(serializedQueuePair));
+        serializedQueuePair receiveBuffer;
+        serializedQueuePair sendBuffer;
 
         int connectionSocket = accept(this->serverSocket, (sockaddr *) nullptr, nullptr);
         INFINITY_ASSERT(connectionSocket >= 0, "[INFINITY][QUEUES][FACTORY] Cannot open connection socket.\n");
 
-        int32_t returnValue = readFromSocket(connectionSocket, reinterpret_cast<char*>(receiveBuffer), sizeof(serializedQueuePair));
+        int32_t returnValue = readFromSocket(connectionSocket, reinterpret_cast<char*>(&receiveBuffer), sizeof(serializedQueuePair));
         INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair), "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n",
                         sizeof(serializedQueuePair), returnValue);
 
-	std::vector<char> userDataBuffer(receiveBuffer->userDataSize);
-	returnValue = readFromSocket(connectionSocket, &userDataBuffer[0], receiveBuffer->userDataSize);
-        INFINITY_ASSERT(returnValue == receiveBuffer->userDataSize, "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n",
+	std::vector<char> userDataBuffer(receiveBuffer.userDataSize);
+	returnValue = readFromSocket(connectionSocket, &userDataBuffer[0], receiveBuffer.userDataSize);
+        INFINITY_ASSERT(returnValue == receiveBuffer.userDataSize, "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n",
                         sizeof(serializedQueuePair), returnValue);
 
         QueuePair *queuePair = new QueuePair(this->context);
 
-        sendBuffer->localDeviceId = queuePair->getLocalDeviceId();
-        sendBuffer->queuePairNumber = queuePair->getQueuePairNumber();
-        sendBuffer->sequenceNumber = queuePair->getSequenceNumber();
-        sendBuffer->userDataSize = userDataSizeInBytes;
+        sendBuffer.localDeviceId = queuePair->getLocalDeviceId();
+        sendBuffer.queuePairNumber = queuePair->getQueuePairNumber();
+        sendBuffer.sequenceNumber = queuePair->getSequenceNumber();
+        sendBuffer.userDataSize = userDataSizeInBytes;
 
-        returnValue = sendToSocket(connectionSocket, reinterpret_cast<const char*>(sendBuffer), sizeof(serializedQueuePair));
+        returnValue = sendToSocket(connectionSocket, reinterpret_cast<const char*>(&sendBuffer), sizeof(serializedQueuePair));
         INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair),
                         "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
 
 	returnValue = sendToSocket(connectionSocket, reinterpret_cast<char*>(userData), userDataSizeInBytes);
 	INFINITY_ASSERT(returnValue == userDataSizeInBytes,
-			"[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
+			"[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", userDataSizeInBytes, returnValue);
 
         INFINITY_DEBUG("[INFINITY][QUEUES][FACTORY] Pairing (%u, %u, %u, %u)-(%u, %u, %u, %u)\n", queuePair->getLocalDeviceId(), queuePair->getQueuePairNumber(),
-                        queuePair->getSequenceNumber(), userDataSizeInBytes, receiveBuffer->localDeviceId, receiveBuffer->queuePairNumber, receiveBuffer->sequenceNumber,
-                        receiveBuffer->userDataSize);
+                        queuePair->getSequenceNumber(), userDataSizeInBytes, receiveBuffer.localDeviceId, receiveBuffer.queuePairNumber, receiveBuffer.sequenceNumber,
+                        receiveBuffer.userDataSize);
 
-        queuePair->activate(receiveBuffer->localDeviceId, receiveBuffer->queuePairNumber, receiveBuffer->sequenceNumber);
+        queuePair->activate(receiveBuffer.localDeviceId, receiveBuffer.queuePairNumber, receiveBuffer.sequenceNumber);
         queuePair->setRemoteUserData(userDataBuffer);
 
         this->context->registerQueuePair(queuePair);
 
         close(connectionSocket);
-        free(receiveBuffer);
-        free(sendBuffer);
 
         return queuePair;
 
@@ -153,8 +151,8 @@ QueuePair * QueuePairFactory::connectToRemoteHost(const char* hostAddress, uint1
         INFINITY_ASSERT(userDataSizeInBytes < infinity::core::Configuration::MAX_CONNECTION_USER_DATA_SIZE,
                         "[INFINITY][QUEUES][FACTORY] User data size is too large.\n")
 
-        serializedQueuePair *receiveBuffer = (serializedQueuePair*) calloc(1, sizeof(serializedQueuePair));
-        serializedQueuePair *sendBuffer = (serializedQueuePair*) calloc(1, sizeof(serializedQueuePair));
+	serializedQueuePair receiveBuffer;
+        serializedQueuePair sendBuffer;
 
         sockaddr_in remoteAddress;
         memset(&(remoteAddress), 0, sizeof(sockaddr_in));
@@ -170,42 +168,40 @@ QueuePair * QueuePairFactory::connectToRemoteHost(const char* hostAddress, uint1
 
         QueuePair *queuePair = new QueuePair(this->context);
 
-        sendBuffer->localDeviceId = queuePair->getLocalDeviceId();
-        sendBuffer->queuePairNumber = queuePair->getQueuePairNumber();
-        sendBuffer->sequenceNumber = queuePair->getSequenceNumber();
-        sendBuffer->userDataSize = userDataSizeInBytes;
+        sendBuffer.localDeviceId = queuePair->getLocalDeviceId();
+        sendBuffer.queuePairNumber = queuePair->getQueuePairNumber();
+        sendBuffer.sequenceNumber = queuePair->getSequenceNumber();
+        sendBuffer.userDataSize = userDataSizeInBytes;
 
-        returnValue = sendToSocket(connectionSocket, reinterpret_cast<char*>(sendBuffer), sizeof(serializedQueuePair));
+        returnValue = sendToSocket(connectionSocket, reinterpret_cast<char*>(&sendBuffer), sizeof(serializedQueuePair));
         INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair),
                         "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
 
 	returnValue = sendToSocket(connectionSocket, reinterpret_cast<char*>(userData), userDataSizeInBytes);
         INFINITY_ASSERT(returnValue == userDataSizeInBytes,
-                        "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
+                        "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes transmitted. Expected %lu. Received %d.\n", userDataSizeInBytes, returnValue);
 	
 
-        returnValue = readFromSocket(connectionSocket, reinterpret_cast<char*>(receiveBuffer), sizeof(serializedQueuePair));
+        returnValue = readFromSocket(connectionSocket, reinterpret_cast<char*>(&receiveBuffer), sizeof(serializedQueuePair));
         INFINITY_ASSERT(returnValue == sizeof(serializedQueuePair),
                         "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
 
-	std::vector<char> userDataBuffer(receiveBuffer->userDataSize);
-	returnValue = readFromSocket(connectionSocket, &userDataBuffer[0], receiveBuffer->userDataSize);
-        INFINITY_ASSERT(returnValue == receiveBuffer->userDataSize,
-                        "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n", sizeof(serializedQueuePair), returnValue);
+	std::vector<char> userDataBuffer(receiveBuffer.userDataSize);
+	returnValue = readFromSocket(connectionSocket, &userDataBuffer[0], receiveBuffer.userDataSize);
+        INFINITY_ASSERT(returnValue == receiveBuffer.userDataSize,
+                        "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes received. Expected %lu. Received %d.\n", receiveBuffer.userDataSize, returnValue);
 
 
         INFINITY_DEBUG("[INFINITY][QUEUES][FACTORY] Pairing (%u, %u, %u, %u)-(%u, %u, %u, %u)\n", queuePair->getLocalDeviceId(), queuePair->getQueuePairNumber(),
-                        queuePair->getSequenceNumber(), userDataSizeInBytes, receiveBuffer->localDeviceId, receiveBuffer->queuePairNumber, receiveBuffer->sequenceNumber,
-                        receiveBuffer->userDataSize);
+                        queuePair->getSequenceNumber(), userDataSizeInBytes, receiveBuffer.localDeviceId, receiveBuffer.queuePairNumber, receiveBuffer.sequenceNumber,
+                        receiveBuffer.userDataSize);
 
-        queuePair->activate(receiveBuffer->localDeviceId, receiveBuffer->queuePairNumber, receiveBuffer->sequenceNumber);
+        queuePair->activate(receiveBuffer.localDeviceId, receiveBuffer.queuePairNumber, receiveBuffer.sequenceNumber);
         queuePair->setRemoteUserData(userDataBuffer);
 
         this->context->registerQueuePair(queuePair);
 
         close(connectionSocket);
-        free(receiveBuffer);
-        free(sendBuffer);
 
         return queuePair;
 
