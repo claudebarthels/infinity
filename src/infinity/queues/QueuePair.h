@@ -9,6 +9,7 @@
 #ifndef QUEUES_QUEUEPAIR_H_
 #define QUEUES_QUEUEPAIR_H_
 
+#include <vector>
 #include <infiniband/verbs.h>
 
 #include <infinity/core/Context.h>
@@ -69,7 +70,7 @@ protected:
 	 */
 
 	void activate(uint16_t remoteDeviceId, uint32_t remoteQueuePairNumber, uint32_t remoteSequenceNumber);
-	void setRemoteUserData(void *userData, uint32_t userDataSize);
+        void setRemoteUserData(const std::vector<char>& userData);
 
 public:
 
@@ -152,8 +153,7 @@ protected:
 	ibv_qp* ibvQueuePair = nullptr;
 	uint32_t sequenceNumber = 0;
 
-	void *userData = nullptr;
-	uint32_t userDataSize = 0;
+        std::vector<char> userData;
 	uint32_t maxNumberOfSGEElements = 0;
 };
 

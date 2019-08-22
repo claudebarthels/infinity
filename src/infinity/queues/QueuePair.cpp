@@ -70,20 +70,12 @@ QueuePair::QueuePair(infinity::core::Context* context) :
 	std::random_device randomGenerator;
 	this->sequenceNumber = randomGenerator();
 
-	this->userData = nullptr;
-	this->userDataSize = 0;
 }
 
 QueuePair::~QueuePair() {
 
 	int32_t returnValue = ibv_destroy_qp(this->ibvQueuePair);
 	INFINITY_ASSERT(returnValue == 0, "[INFINITY][QUEUES][QUEUEPAIR] Cannot delete queue pair.\n");
-
-	if (this->userData != nullptr && this->userDataSize != 0) {
-		free(this->userData);
-		this->userDataSize = 0;
-	}
-
 }
 
 void QueuePair::activate(uint16_t remoteDeviceId, uint32_t remoteQueuePairNumber, uint32_t remoteSequenceNumber) {
@@ -122,12 +114,8 @@ void QueuePair::activate(uint16_t remoteDeviceId, uint32_t remoteQueuePairNumber
 
 }
 
-void QueuePair::setRemoteUserData(void* userData, uint32_t userDataSize) {
-	if (userDataSize > 0) {
-		this->userData = new char[userDataSize];
-		memcpy(this->userData, userData, userDataSize);
-		this->userDataSize = userDataSize;
-	}
+void QueuePair::setRemoteUserData(const std::vector<char>& userData) {
+        this->userData = userData; 
 }
 
 uint16_t QueuePair::getLocalDeviceId() {
@@ -574,15 +562,15 @@ void QueuePair::fetchAndAdd(const infinity::memory::RegionToken& destination, in
 
 
 bool QueuePair::hasUserData() {
-	return (this->userData != nullptr && this->userDataSize != 0);
+        return !userData.empty();
 }
 
 uint32_t QueuePair::getUserDataSize() {
-	return this->userDataSize;
+        return userData.size();
 }
 
 void* QueuePair::getUserData() {
-	return this->userData;
+	return &this->userData[0];
 }
 
 } /* namespace queues */

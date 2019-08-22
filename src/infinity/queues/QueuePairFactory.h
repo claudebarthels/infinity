@@ -9,6 +9,7 @@
 #ifndef QUEUES_QUEUEPAIRFACTORY_H_
 #define QUEUES_QUEUEPAIRFACTORY_H_
 
+#include <vector>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -42,7 +43,7 @@ public:
 	/**
 	 * Create loopback queue pair
 	 */
-	QueuePair * createLoopback(void *userData = nullptr, uint32_t userDataSizeInBytes = 0);
+        QueuePair * createLoopback(const std::vector<char>& userData);
 
 protected:
 
