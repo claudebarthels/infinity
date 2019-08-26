@@ -16,17 +16,17 @@ Using Infinity is straight-forward and requires only a few lines of C++ code.
 
 ```C
 // Create new context
-infinity::core::Context *context = new infinity::core::Context();
+auto Context = std::make_shared<infinity::core::Context()>;
 
 // Create a queue pair
-infinity::queues::QueuePairFactory *qpFactory = new  infinity::queues::QueuePairFactory(context);
-infinity::queues::QueuePair *qp = qpFactory->connectToRemoteHost(SERVER_IP, PORT_NUMBER);
+auto qpFactory = std::make_shared<infinity::queues::QueuePairFactory>(context);
+auto qp = qpFactory->connectToRemoteHost(SERVER_IP, PORT_NUMBER);
 
 // Create and register a buffer with the network
-infinity::memory::Buffer *localBuffer = new infinity::memory::Buffer(context, BUFFER_SIZE);
+auto localBuffer = std::make_shared<infinity::memory::Buffer>(context, BUFFER_SIZE);
 
 // Get information from a remote buffer
-infinity::memory::RegionToken *remoteBufferToken = new infinity::memory::RegionToken(REMOTE_BUFFER_INFO);
+infinity::memory::RegionToken remoteBufferToken(REMOTE_BUFFER_INFO);
 
 // Read (one-sided) from a remote buffer and wait for completion
 infinity::requests::RequestToken requestToken(context);
@@ -42,11 +42,6 @@ qp->send(localBuffer, &requestToken);
 requestToken.waitUntilCompleted();
 
 // Close connection
-delete remoteBufferToken;
-delete localBuffer;
-delete qp;
-delete qpFactory;
-delete context;
 ```
 
 ## Citing Infinity in Academic Publications
@@ -55,13 +50,13 @@ This library has been created in the context of my work on parallel and distribu
 
 Claude Barthels, Simon Loesing, Gustavo Alonso, Donald Kossmann.
 **Rack-Scale In-Memory Join Processing using RDMA.**
-*Proceedings of the 2015 ACM SIGMOD International Conference on Management of Data, June 2015.*  
+*Proceedings of the 2015 ACM SIGMOD International Conference on Management of Data, June 2015.*
 **PDF:** http://barthels.net/publications/barthels-sigmod-2015.pdf
 
 
 Claude Barthels, Ingo Müller, Timo Schneider, Gustavo Alonso, Torsten Hoefler.
 **Distributed Join Algorithms on Thousands of Cores.**
-*Proceedings of the VLDB Endowment, Volume 10, Issue 5, January 2017.*  
+*Proceedings of the VLDB Endowment, Volume 10, Issue 5, January 2017.*
 **PDF:** http://barthels.net/publications/barthels-vldb-2017.pdf
 
 ---
@@ -98,4 +93,3 @@ Claude Barthels, Ingo Müller, Timo Schneider, Gustavo Alonso, Torsten Hoefler.
   url       = {http://www.vldb.org/pvldb/vol10/p517-barthels.pdf}
 }
 ```
-
