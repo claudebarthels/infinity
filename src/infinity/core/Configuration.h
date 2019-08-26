@@ -23,27 +23,27 @@ public:
    * Queue length settings
    */
 
-  static const uint32_t
-  sendCompletionQueueLength(Context *context); // Must be less than MAX_CQE
+  static uint32_t sendCompletionQueueLength(Context *context); // Must be less
+                                                               // than MAX_CQE
 
-  static const uint32_t
-  recvCompletionQueueLength(Context *context); // Must be less than MAX_CQE
+  static uint32_t recvCompletionQueueLength(Context *context); // Must be less
+                                                               // than MAX_CQE
 
-  static const uint32_t sendCompletionQueueLength(
+  static uint32_t sendCompletionQueueLength(
       std::shared_ptr<Context> &context); // Must be less than MAX_CQE
 
-  static const uint32_t recvCompletionQueueLength(
+  static uint32_t recvCompletionQueueLength(
       std::shared_ptr<Context> &context); // Must be less than MAX_CQE
 
-  static const uint32_t
-  sharedRecvQueueLength(Context *context); // Must be less than MAX_SRQ_WR
+  static uint32_t sharedRecvQueueLength(Context *context); // Must be less than
+                                                           // MAX_SRQ_WR
 
-  static const uint32_t maxNumberOfOutstandingRequests(
+  static uint32_t maxNumberOfOutstandingRequests(
       Context *context); // Must be less than (MAX_QP_WR * MAX_QP)
                          // Since we use one single shared receive queue,
                          // this number should be less than MAX_SRQ_WR
 
-  static const uint32_t maxNumberOfSGEElements(
+  static uint32_t maxNumberOfSGEElements(
       const std::shared_ptr<Context> &context); // Must be less than MAX_SGE
 
 public:
