@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
       readBuffers.emplace_back(
           std::make_unique<infinity::memory::Buffer>(context, MAX_BUFFER_SIZE));
       regionTokens.emplace_back(readBuffers.back()->createRegionToken());
-      for (int i = 0; i < readBuffers.back()->getSizeInBytes(); i++) {
+      for (uint64_t i = 0; i < readBuffers.back()->getSizeInBytes(); i++) {
         reinterpret_cast<char *>(readBuffers.back()->getData())[i] = i;
       }
     }
@@ -121,7 +121,8 @@ int main(int argc, char **argv) {
       }
 
       /* Make sure we really did the read. */
-      for (int i = 0; i < remoteBufferTokens[sizeIndex].getSizeInBytes(); i++) {
+      for (uint64_t i = 0; i < remoteBufferTokens[sizeIndex].getSizeInBytes();
+           i++) {
         const char value = reinterpret_cast<char *>(readBuffer->getData())[i];
         if (value != char(i)) {
           std::cout << "data not properly transfered " << int(i)

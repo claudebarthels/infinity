@@ -138,7 +138,7 @@ QueuePairFactory::acceptIncomingConnection(void *userData,
   std::vector<char> userDataBuffer(receiveBuffer.userDataSize);
   returnValue = readFromSocket(connectionSocket, &userDataBuffer[0],
                                receiveBuffer.userDataSize);
-  INFINITY_ASSERT(returnValue == receiveBuffer.userDataSize,
+  INFINITY_ASSERT(returnValue == int32_t(receiveBuffer.userDataSize),
                   "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes "
                   "received. Expected %lu. Received %d.\n",
                   sizeof(serializedQueuePair), returnValue);
@@ -161,9 +161,9 @@ QueuePairFactory::acceptIncomingConnection(void *userData,
   returnValue =
       sendToSocket(connectionSocket, reinterpret_cast<char *>(userData),
                    userDataSizeInBytes);
-  INFINITY_ASSERT(returnValue == userDataSizeInBytes,
+  INFINITY_ASSERT(returnValue == int32_t(userDataSizeInBytes),
                   "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes "
-                  "transmitted. Expected %lu. Received %d.\n",
+                  "transmitted. Expected %u. Received %d.\n",
                   userDataSizeInBytes, returnValue);
 
   INFINITY_DEBUG(
@@ -209,8 +209,8 @@ QueuePairFactory::connectToRemoteHost(const char *hostAddress, uint16_t port,
       connectionSocket >= 0,
       "[INFINITY][QUEUES][FACTORY] Cannot open connection socket.\n");
 
-  int returnValue = connect(connectionSocket, (sockaddr *)&(remoteAddress),
-                            sizeof(sockaddr_in));
+  int32_t returnValue = connect(connectionSocket, (sockaddr *)&(remoteAddress),
+                                sizeof(sockaddr_in));
   INFINITY_ASSERT(returnValue == 0,
                   "[INFINITY][QUEUES][FACTORY] Could not connect to server.\n");
 
@@ -232,9 +232,9 @@ QueuePairFactory::connectToRemoteHost(const char *hostAddress, uint16_t port,
   returnValue =
       sendToSocket(connectionSocket, reinterpret_cast<char *>(userData),
                    userDataSizeInBytes);
-  INFINITY_ASSERT(returnValue == userDataSizeInBytes,
+  INFINITY_ASSERT(returnValue == int32_t(userDataSizeInBytes),
                   "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes "
-                  "transmitted. Expected %lu. Received %d.\n",
+                  "transmitted. Expected %u. Received %d.\n",
                   userDataSizeInBytes, returnValue);
 
   returnValue =
@@ -248,9 +248,9 @@ QueuePairFactory::connectToRemoteHost(const char *hostAddress, uint16_t port,
   std::vector<char> userDataBuffer(receiveBuffer.userDataSize);
   returnValue = readFromSocket(connectionSocket, &userDataBuffer[0],
                                receiveBuffer.userDataSize);
-  INFINITY_ASSERT(returnValue == receiveBuffer.userDataSize,
+  INFINITY_ASSERT(returnValue == int(receiveBuffer.userDataSize),
                   "[INFINITY][QUEUES][FACTORY] Incorrect number of bytes "
-                  "received. Expected %lu. Received %d.\n",
+                  "received. Expected %u. Received %d.\n",
                   receiveBuffer.userDataSize, returnValue);
 
   INFINITY_DEBUG(

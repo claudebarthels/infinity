@@ -13,7 +13,7 @@ PROJECT_NAME = libinfinity
 ##################################################
 
 CC 					= g++
-CC_FLAGS 		= -g -O3 -std=c++14 -DINFINITY_DEBUG_ON -DINFINITY_ASSERT_ON
+CC_FLAGS 		= -g -O3 -std=c++14 -DINFINITY_DEBUG_ON -DINFINITY_ASSERT_ON -Wall
 LD_FLAGS		= -linfinity -libverbs
 
 ##################################################
