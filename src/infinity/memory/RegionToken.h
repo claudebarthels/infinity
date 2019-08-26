@@ -20,6 +20,7 @@ namespace memory {
 class RegionToken {
 
 public:
+  RegionToken();
   RegionToken(Region *memoryRegion, RegionType memoryRegionType,
               uint64_t sizeInBytes, uint64_t address, uint32_t localKey,
               uint32_t remoteKey);

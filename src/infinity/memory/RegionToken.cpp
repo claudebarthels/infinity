@@ -11,6 +11,9 @@
 namespace infinity {
 namespace memory {
 
+RegionToken::RegionToken()
+{}
+
 RegionToken::RegionToken(Region *memoryRegion, RegionType memoryRegionType,
                          uint64_t sizeInBytes, uint64_t address,
                          uint32_t localKey, uint32_t remoteKey)
