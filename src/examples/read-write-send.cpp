@@ -57,8 +57,7 @@ int main(int argc, char **argv) {
   if (isServer) {
 
     std::cout << "Creating buffers to read from and write to\n";
-    infinity::memory::Buffer *bufferToReadWrite =
-        new infinity::memory::Buffer(context, 128);
+    auto bufferToReadWrite = std::make_shared<infinity::memory::Buffer>(context, 128);
     infinity::memory::RegionToken bufferToken =
         bufferToReadWrite->createRegionToken();
 
@@ -76,7 +75,6 @@ int main(int argc, char **argv) {
       ;
 
     std::cout << "Message received\n";
-    delete bufferToReadWrite;
 
   } else {
 
