@@ -21,49 +21,46 @@ namespace requests {
 class RequestToken {
 
 public:
+  RequestToken(std::shared_ptr<infinity::core::Context> context);
 
-        RequestToken(std::shared_ptr<infinity::core::Context> context);
+  void reset();
 
-	void reset();
+  void setRegion(std::shared_ptr<infinity::memory::Region> region);
+  std::shared_ptr<infinity::memory::Region> getRegion();
 
-        void setRegion(std::shared_ptr<infinity::memory::Region> region);
-        std::shared_ptr<infinity::memory::Region> getRegion();
+  void setCompleted(bool success);
+  bool wasSuccessful();
 
-	void setCompleted(bool success);
-	bool wasSuccessful();
+  bool checkIfCompleted();
+  void waitUntilCompleted();
 
-	bool checkIfCompleted();
-	void waitUntilCompleted();
+  void setImmediateValue(uint32_t immediateValue);
+  bool hasImmediateValue();
+  uint32_t getImmediateValue();
 
-	void setImmediateValue(uint32_t immediateValue);
-	bool hasImmediateValue();
-	uint32_t getImmediateValue();
+  void setUserData(void *userData, uint32_t userDataSize);
+  bool hasUserData();
+  void *getUserData();
+  uint32_t getUserDataSize();
 
-	void setUserData(void* userData, uint32_t userDataSize);
-	bool hasUserData();
-	void* getUserData();
-	uint32_t getUserDataSize();
-
-	RequestToken(const RequestToken&) = delete;
-	RequestToken(const RequestToken&&) = delete;
-	RequestToken& operator=(const RequestToken&) = delete;
-	RequestToken& operator=(RequestToken&&) = delete;
+  RequestToken(const RequestToken &) = delete;
+  RequestToken(const RequestToken &&) = delete;
+  RequestToken &operator=(const RequestToken &) = delete;
+  RequestToken &operator=(RequestToken &&) = delete;
 
 protected:
+  std::shared_ptr<infinity::core::Context> const context;
+  std::shared_ptr<infinity::memory::Region> region;
 
-        std::shared_ptr<infinity::core::Context> const context;
-        std::shared_ptr<infinity::memory::Region> region;
+  std::atomic<bool> completed;
+  std::atomic<bool> success;
 
-	std::atomic<bool> completed;
-	std::atomic<bool> success;
+  void *userData = nullptr;
+  uint32_t userDataSize = 0;
+  bool userDataValid = false;
 
-	void *userData = nullptr;
-	uint32_t userDataSize = 0;
-	bool userDataValid = false;
- 
-	uint32_t immediateValue = 0;
-	bool immediateValueValid = false;
-
+  uint32_t immediateValue = 0;
+  bool immediateValueValid = false;
 };
 
 } /* namespace requests */

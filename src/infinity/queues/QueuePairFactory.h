@@ -22,39 +22,42 @@ namespace queues {
 
 class QueuePairFactory {
 public:
+  QueuePairFactory(const std::shared_ptr<infinity::core::Context> &context);
+  ~QueuePairFactory();
 
-        QueuePairFactory(const std::shared_ptr<infinity::core::Context>& context);
-	~QueuePairFactory();
+  /**
+   * Bind to port for listening to incoming connections
+   */
+  void bindToPort(uint16_t port);
 
-	/**
-	 * Bind to port for listening to incoming connections
-	 */
-	void bindToPort(uint16_t port);
+  /**
+   * Accept incoming connection request (passive side)
+   */
+  std::shared_ptr<QueuePair>
+  acceptIncomingConnection(void *userData = nullptr,
+                           uint32_t userDataSizeInBytes = 0);
 
-	/**
-	 * Accept incoming connection request (passive side)
-	 */
-        std::shared_ptr<QueuePair> acceptIncomingConnection(void *userData = nullptr, uint32_t userDataSizeInBytes = 0);
+  /**
+   * Connect to remote machine (active side)
+   */
+  std::shared_ptr<QueuePair>
+  connectToRemoteHost(const char *hostAddress, uint16_t port,
+                      void *userData = nullptr,
+                      uint32_t userDataSizeInBytes = 0);
 
-	/**
-	 * Connect to remote machine (active side)
-	 */
-        std::shared_ptr<QueuePair> connectToRemoteHost(const char* hostAddress, uint16_t port, void *userData = nullptr, uint32_t userDataSizeInBytes = 0);
-
-	/**
-	 * Create loopback queue pair
-	 */
-        std::shared_ptr<QueuePair> createLoopback(const std::vector<char>& userData);
+  /**
+   * Create loopback queue pair
+   */
+  std::shared_ptr<QueuePair> createLoopback(const std::vector<char> &userData);
 
 protected:
+  std::shared_ptr<infinity::core::Context> context;
 
-        std::shared_ptr<infinity::core::Context> context;
-
-	int32_t serverSocket = -1;
+  int32_t serverSocket = -1;
 
 private:
-        int32_t readFromSocket(int32_t socket, char *buffer, uint32_t size);
-        int32_t sendToSocket(int32_t socket, const char *buffer, uint32_t size);
+  int32_t readFromSocket(int32_t socket, char *buffer, uint32_t size);
+  int32_t sendToSocket(int32_t socket, const char *buffer, uint32_t size);
 };
 
 } /* namespace queues */

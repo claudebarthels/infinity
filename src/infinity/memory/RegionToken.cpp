@@ -11,55 +11,41 @@
 namespace infinity {
 namespace memory {
 
-RegionToken::RegionToken(Region *memoryRegion, RegionType memoryRegionType, uint64_t sizeInBytes, uint64_t address, uint32_t localKey, uint32_t remoteKey) :
-	memoryRegion (memoryRegion),
-	memoryRegionType (memoryRegionType),
-	sizeInBytes(sizeInBytes),
-	address(address),
-	localKey(localKey),
-	remoteKey(remoteKey) {
+RegionToken::RegionToken(Region *memoryRegion, RegionType memoryRegionType,
+                         uint64_t sizeInBytes, uint64_t address,
+                         uint32_t localKey, uint32_t remoteKey)
+    : memoryRegion(memoryRegion), memoryRegionType(memoryRegionType),
+      sizeInBytes(sizeInBytes), address(address), localKey(localKey),
+      remoteKey(remoteKey) {
 
-	// Nothing to do here
-
+  // Nothing to do here
 }
 
-Region* RegionToken::getMemoryRegion() const {
-	return memoryRegion;
-}
+Region *RegionToken::getMemoryRegion() const { return memoryRegion; }
 
 RegionType RegionToken::getMemoryRegionType() const {
-	return this->memoryRegionType;
+  return this->memoryRegionType;
 }
 
-uint64_t RegionToken::getSizeInBytes() const {
-	return this->sizeInBytes;
-}
+uint64_t RegionToken::getSizeInBytes() const { return this->sizeInBytes; }
 
 uint64_t RegionToken::getRemainingSizeInBytes(uint64_t offset) const {
-	return this->sizeInBytes-offset;
+  return this->sizeInBytes - offset;
 }
 
-uint64_t RegionToken::getAddress() const {
-	return address;
-}
+uint64_t RegionToken::getAddress() const { return address; }
 
 uint64_t RegionToken::getAddressWithOffset(uint64_t offset) const {
-	return address + offset;
+  return address + offset;
 }
 
-uint32_t RegionToken::getLocalKey() const {
-	return this->localKey;
-}
+uint32_t RegionToken::getLocalKey() const { return this->localKey; }
 
-uint32_t RegionToken::getRemoteKey() const {
-	return this->remoteKey;
-}
+uint32_t RegionToken::getRemoteKey() const { return this->remoteKey; }
 
-std::ostream& operator << (std::ostream &os, const RegionToken& regionToken)
-{
-  os << "size: " << regionToken.getSizeInBytes()
-     << " address " << regionToken.getAddress()
-     << " localKey " << regionToken.getLocalKey()
+std::ostream &operator<<(std::ostream &os, const RegionToken &regionToken) {
+  os << "size: " << regionToken.getSizeInBytes() << " address "
+     << regionToken.getAddress() << " localKey " << regionToken.getLocalKey()
      << " remoteKey " << regionToken.getRemoteKey();
   return os;
 }

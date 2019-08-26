@@ -14,28 +14,22 @@
 #include <infinity/memory/Region.h>
 #include <infinity/core/Context.h>
 
-
 namespace infinity {
 namespace memory {
 
 class Atomic : public Region {
 
 public:
-
-        Atomic(std::shared_ptr<infinity::core::Context> context);
-	virtual ~Atomic();
+  Atomic(std::shared_ptr<infinity::core::Context> context);
+  virtual ~Atomic();
 
 public:
+  uint64_t getValue();
 
-	uint64_t getValue();
-
-	void setValueNonAtomic(uint64_t value);
+  void setValueNonAtomic(uint64_t value);
 
 protected:
-
-	uint64_t value = 0;
-
-
+  uint64_t value = 0;
 };
 
 } /* namespace memory */

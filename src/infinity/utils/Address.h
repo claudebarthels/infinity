@@ -18,10 +18,8 @@ namespace utils {
 class Address {
 
 public:
-
-        static std::string getIpAddressOfInterface(const char *interfaceName);
-	static uint32_t getIpAddressAsUint32(const char *ipAddress);
-
+  static std::string getIpAddressOfInterface(const char *interfaceName);
+  static uint32_t getIpAddressAsUint32(const char *ipAddress);
 };
 
 } /* namespace utils */

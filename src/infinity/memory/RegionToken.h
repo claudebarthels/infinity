@@ -20,32 +20,30 @@ namespace memory {
 class RegionToken {
 
 public:
-
-        RegionToken(Region *memoryRegion, RegionType memoryRegionType, uint64_t sizeInBytes, uint64_t address, uint32_t localKey, uint32_t remoteKey);
+  RegionToken(Region *memoryRegion, RegionType memoryRegionType,
+              uint64_t sizeInBytes, uint64_t address, uint32_t localKey,
+              uint32_t remoteKey);
 
 public:
-
-        Region * getMemoryRegion() const;
-        RegionType getMemoryRegionType() const;
-        uint64_t getSizeInBytes() const;
-        uint64_t getRemainingSizeInBytes(uint64_t offset) const;
-        uint64_t getAddress() const;
-        uint64_t getAddressWithOffset(uint64_t offset) const;
-        uint32_t getLocalKey() const;
-        uint32_t getRemoteKey() const;
+  Region *getMemoryRegion() const;
+  RegionType getMemoryRegionType() const;
+  uint64_t getSizeInBytes() const;
+  uint64_t getRemainingSizeInBytes(uint64_t offset) const;
+  uint64_t getAddress() const;
+  uint64_t getAddressWithOffset(uint64_t offset) const;
+  uint32_t getLocalKey() const;
+  uint32_t getRemoteKey() const;
 
 protected:
-
-        Region *memoryRegion = nullptr;
-        const RegionType memoryRegionType = UNKNOWN;
-        const uint64_t sizeInBytes = 0;
-        const uint64_t address = 0;
-        const uint32_t localKey = 0;
-        const uint32_t remoteKey = 0;
-
+  Region *memoryRegion = nullptr;
+  const RegionType memoryRegionType = UNKNOWN;
+  const uint64_t sizeInBytes = 0;
+  const uint64_t address = 0;
+  const uint32_t localKey = 0;
+  const uint32_t remoteKey = 0;
 };
-  
-std::ostream& operator << (std::ostream &os, const RegionToken& regionToken);
+
+std::ostream &operator<<(std::ostream &os, const RegionToken &regionToken);
 } /* namespace memory */
 } /* namespace infinity */
 

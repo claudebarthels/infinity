@@ -20,38 +20,46 @@
 namespace infinity {
 namespace utils {
 
-std::string Address::getIpAddressOfInterface(const char* interfaceName) {
+std::string Address::getIpAddressOfInterface(const char *interfaceName) {
 
-	struct ifaddrs *ifAddr = nullptr;
-	struct ifaddrs *ifa = nullptr;
-	char ipAddress[16];
+  struct ifaddrs *ifAddr = nullptr;
+  struct ifaddrs *ifa = nullptr;
+  char ipAddress[16];
 
-	int returnValue = getifaddrs(&ifAddr);
-	INFINITY_ASSERT(returnValue != -1, "[INFINITY][UTILS][ADDRESS] Cannot read interface list.\n");
+  int returnValue = getifaddrs(&ifAddr);
+  INFINITY_ASSERT(returnValue != -1,
+                  "[INFINITY][UTILS][ADDRESS] Cannot read interface list.\n");
 
-	for (ifa = ifAddr; ifa != nullptr; ifa = ifa->ifa_next) {
-		if (ifa->ifa_addr == nullptr) {
-			continue;
-		}
-		if ((ifa->ifa_addr->sa_family == AF_INET) && (strcasecmp(interfaceName, ifa->ifa_name) == 0)) {
-			sprintf(ipAddress, "%s", inet_ntoa(((struct sockaddr_in *) ifa->ifa_addr)->sin_addr));
-			break;
-		}
-	}
-	INFINITY_ASSERT(ifa != nullptr, "[INFINITY][UTILS][ADDRESS] Cannot find interface named %s.\n", interfaceName);
+  for (ifa = ifAddr; ifa != nullptr; ifa = ifa->ifa_next) {
+    if (ifa->ifa_addr == nullptr) {
+      continue;
+    }
+    if ((ifa->ifa_addr->sa_family == AF_INET) &&
+        (strcasecmp(interfaceName, ifa->ifa_name) == 0)) {
+      sprintf(ipAddress, "%s",
+              inet_ntoa(((struct sockaddr_in *)ifa->ifa_addr)->sin_addr));
+      break;
+    }
+  }
+  INFINITY_ASSERT(
+      ifa != nullptr,
+      "[INFINITY][UTILS][ADDRESS] Cannot find interface named %s.\n",
+      interfaceName);
 
-	freeifaddrs(ifAddr);
+  freeifaddrs(ifAddr);
 
-	return ipAddress;
-
+  return ipAddress;
 }
 
-uint32_t Address::getIpAddressAsUint32(const char* ipAddress) {
+uint32_t Address::getIpAddressAsUint32(const char *ipAddress) {
 
-	uint32_t ipAddressNumbers[4];
-	sscanf(ipAddress, "%d.%d.%d.%d", &ipAddressNumbers[3], &ipAddressNumbers[2], &ipAddressNumbers[1], &ipAddressNumbers[0]);
-	uint32_t ipAddressNumber(ipAddressNumbers[0] | ipAddressNumbers[1] << 8 | ipAddressNumbers[2] << 16 | ipAddressNumbers[3] << 24);
-	return ipAddressNumber;
+  uint32_t ipAddressNumbers[4];
+  sscanf(ipAddress, "%d.%d.%d.%d", &ipAddressNumbers[3], &ipAddressNumbers[2],
+         &ipAddressNumbers[1], &ipAddressNumbers[0]);
+  uint32_t ipAddressNumber(ipAddressNumbers[0] | ipAddressNumbers[1] << 8 |
+                           ipAddressNumbers[2] << 16 |
+                           ipAddressNumbers[3] << 24);
+  return ipAddressNumber;
 }
 
 } /* namespace utils */

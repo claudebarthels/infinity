@@ -12,7 +12,11 @@
 namespace infinity {
 namespace memory {
 
-enum RegionType {BUFFER, ATOMIC, UNKNOWN};
+enum RegionType {
+  BUFFER,
+  ATOMIC,
+  UNKNOWN
+};
 
 } /* namespace memory */
 } /* namespace infinity */

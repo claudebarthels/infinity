@@ -17,63 +17,60 @@
 namespace infinity {
 namespace memory {
 
-RegisteredMemory::RegisteredMemory(infinity::core::Context* context, uint64_t sizeInBytes) {
+RegisteredMemory::RegisteredMemory(infinity::core::Context *context,
+                                   uint64_t sizeInBytes) {
 
-	this->context = context;
-	this->sizeInBytes = sizeInBytes;
-	this->memoryAllocated = true;
+  this->context = context;
+  this->sizeInBytes = sizeInBytes;
+  this->memoryAllocated = true;
 
-	int res = posix_memalign(&(this->data), infinity::core::Configuration::PAGE_SIZE, sizeInBytes);
-	INFINITY_ASSERT(res == 0, "[INFINITY][MEMORY][REGISTERED] Cannot allocate and align buffer.\n");
+  int res = posix_memalign(
+      &(this->data), infinity::core::Configuration::PAGE_SIZE, sizeInBytes);
+  INFINITY_ASSERT(
+      res == 0,
+      "[INFINITY][MEMORY][REGISTERED] Cannot allocate and align buffer.\n");
 
-	memset(this->data, 0, sizeInBytes);
+  memset(this->data, 0, sizeInBytes);
 
-	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), this->data, this->sizeInBytes,
-			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
-	INFINITY_ASSERT(this->ibvMemoryRegion != nullptr, "[INFINITY][MEMORY][REGISTERED] Registration failed.\n");
+  this->ibvMemoryRegion = ibv_reg_mr(
+      this->context->getProtectionDomain(), this->data, this->sizeInBytes,
+      IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE |
+          IBV_ACCESS_REMOTE_READ);
+  INFINITY_ASSERT(this->ibvMemoryRegion != nullptr,
+                  "[INFINITY][MEMORY][REGISTERED] Registration failed.\n");
 }
 
-RegisteredMemory::RegisteredMemory(infinity::core::Context* context, void *data, uint64_t sizeInBytes) {
+RegisteredMemory::RegisteredMemory(infinity::core::Context *context, void *data,
+                                   uint64_t sizeInBytes) {
 
-	this->context = context;
-	this->sizeInBytes = sizeInBytes;
-	this->memoryAllocated = false;
+  this->context = context;
+  this->sizeInBytes = sizeInBytes;
+  this->memoryAllocated = false;
 
-	this->data = data;
+  this->data = data;
 
-	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), this->data, this->sizeInBytes,
-			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
-	INFINITY_ASSERT(this->ibvMemoryRegion != nullptr, "[INFINITY][MEMORY][REGISTERED] Registration failed.\n");
+  this->ibvMemoryRegion = ibv_reg_mr(
+      this->context->getProtectionDomain(), this->data, this->sizeInBytes,
+      IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE |
+          IBV_ACCESS_REMOTE_READ);
+  INFINITY_ASSERT(this->ibvMemoryRegion != nullptr,
+                  "[INFINITY][MEMORY][REGISTERED] Registration failed.\n");
 }
-
 
 RegisteredMemory::~RegisteredMemory() {
 
-	ibv_dereg_mr(this->ibvMemoryRegion);
+  ibv_dereg_mr(this->ibvMemoryRegion);
 
-	if(this->memoryAllocated) {
-		free(this->data);
-	}
-
+  if (this->memoryAllocated) {
+    free(this->data);
+  }
 }
 
-void* RegisteredMemory::getData() {
+void *RegisteredMemory::getData() { return this->data; }
 
-	return this->data;
+uint64_t RegisteredMemory::getSizeInBytes() { return this->sizeInBytes; }
 
-}
-
-uint64_t RegisteredMemory::getSizeInBytes() {
-
-	return this->sizeInBytes;
-
-}
-
-ibv_mr* RegisteredMemory::getRegion() {
-
-	return this->ibvMemoryRegion;
-
-}
+ibv_mr *RegisteredMemory::getRegion() { return this->ibvMemoryRegion; }
 
 } /* namespace pool */
 } /* namespace ivory */

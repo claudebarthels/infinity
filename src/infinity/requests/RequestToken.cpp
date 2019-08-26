@@ -11,91 +11,79 @@
 namespace infinity {
 namespace requests {
 
-RequestToken::RequestToken(std::shared_ptr<infinity::core::Context> context) :
-		context(context) {
-	this->success.store(false);
-	this->completed.store(false);
-	this->region = nullptr;
-	this->userData = nullptr;
-	this->userDataValid = false;
-	this->userDataSize = 0;
-	this->immediateValue = 0;
-	this->immediateValueValid = false;
+RequestToken::RequestToken(std::shared_ptr<infinity::core::Context> context)
+    : context(context) {
+  this->success.store(false);
+  this->completed.store(false);
+  this->region = nullptr;
+  this->userData = nullptr;
+  this->userDataValid = false;
+  this->userDataSize = 0;
+  this->immediateValue = 0;
+  this->immediateValueValid = false;
 }
 
 void RequestToken::setCompleted(bool success) {
-	this->success.store(success);
-	this->completed.store(true);
+  this->success.store(success);
+  this->completed.store(true);
 }
 
 bool RequestToken::checkIfCompleted() {
-	if (this->completed.load()) {
-		return true;
-	} else {
-		this->context->pollSendCompletionQueue();
-		return this->completed.load();
-	}
+  if (this->completed.load()) {
+    return true;
+  } else {
+    this->context->pollSendCompletionQueue();
+    return this->completed.load();
+  }
 }
 
 void RequestToken::waitUntilCompleted() {
-	while (!this->completed.load()) {
-		this->context->pollSendCompletionQueue();
-	}
+  while (!this->completed.load()) {
+    this->context->pollSendCompletionQueue();
+  }
 }
 
-bool RequestToken::wasSuccessful() {
-	return this->success.load();
-}
+bool RequestToken::wasSuccessful() { return this->success.load(); }
 
 void RequestToken::reset() {
-	this->success.store(false);
-	this->completed.store(false);
-	this->region = nullptr;
-	this->userData = nullptr;
-	this->userDataValid = false;
-	this->userDataSize = 0;
-	this->immediateValue = 0;
-	this->immediateValueValid = false;
+  this->success.store(false);
+  this->completed.store(false);
+  this->region = nullptr;
+  this->userData = nullptr;
+  this->userDataValid = false;
+  this->userDataSize = 0;
+  this->immediateValue = 0;
+  this->immediateValueValid = false;
 }
 
 void RequestToken::setRegion(std::shared_ptr<infinity::memory::Region> region) {
-	this->region = region;
+  this->region = region;
 }
 
 std::shared_ptr<infinity::memory::Region> RequestToken::getRegion() {
-	return this->region;
+  return this->region;
 }
 
-void RequestToken::setUserData(void* userData, uint32_t userDataSize) {
-	this->userData = userData;
-	this->userDataSize = userDataSize;
-	this->userDataValid = true;
+void RequestToken::setUserData(void *userData, uint32_t userDataSize) {
+  this->userData = userData;
+  this->userDataSize = userDataSize;
+  this->userDataValid = true;
 }
 
-void* RequestToken::getUserData() {
-	return this->userData;
-}
+void *RequestToken::getUserData() { return this->userData; }
 
-bool RequestToken::hasUserData() {
-	return this->userDataValid;
-}
+bool RequestToken::hasUserData() { return this->userDataValid; }
 
-uint32_t RequestToken::getUserDataSize() {
-	return this->userDataSize;
-}
+uint32_t RequestToken::getUserDataSize() { return this->userDataSize; }
 
 void RequestToken::setImmediateValue(uint32_t immediateValue) {
-	this->immediateValue = immediateValue;
-	this->immediateValueValid = true;
+  this->immediateValue = immediateValue;
+  this->immediateValueValid = true;
 }
 
-uint32_t RequestToken::getImmediateValue() {
-	return this->immediateValue;
-}
+uint32_t RequestToken::getImmediateValue() { return this->immediateValue; }
 
-bool RequestToken::hasImmediateValue() {
-	return this->immediateValueValid;
-}
+bool RequestToken::hasImmediateValue() { return this->immediateValueValid; }
 
 } /* namespace requests */
 } /* namespace infinity */

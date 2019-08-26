@@ -15,37 +15,27 @@ namespace memory {
 
 Atomic::Atomic(std::shared_ptr<infinity::core::Context> context) {
 
-	this->context = context;
-	this->sizeInBytes = sizeof(uint64_t);
-	this->memoryRegionType = RegionType::ATOMIC;
+  this->context = context;
+  this->sizeInBytes = sizeof(uint64_t);
+  this->memoryRegionType = RegionType::ATOMIC;
 
-	this->value = 0;
-	this->data = &value;
+  this->value = 0;
+  this->data = &value;
 
-	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), &(this->value), this->sizeInBytes,
-			IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_ATOMIC | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
-
-
+  this->ibvMemoryRegion = ibv_reg_mr(
+      this->context->getProtectionDomain(), &(this->value), this->sizeInBytes,
+      IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_ATOMIC |
+          IBV_ACCESS_REMOTE_READ | IBV_ACCESS_REMOTE_WRITE);
 }
 
-uint64_t infinity::memory::Atomic::getValue() {
-
-	return this->value;
-
-}
+uint64_t infinity::memory::Atomic::getValue() { return this->value; }
 
 void infinity::memory::Atomic::setValueNonAtomic(uint64_t value) {
 
-	this->value = value;
-
+  this->value = value;
 }
 
-
-Atomic::~Atomic() {
-
-	ibv_dereg_mr(this->ibvMemoryRegion);
-
-}
+Atomic::~Atomic() { ibv_dereg_mr(this->ibvMemoryRegion); }
 
 } /* namespace memory */
 } /* namespace infinity */

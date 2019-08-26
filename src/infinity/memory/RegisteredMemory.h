@@ -17,35 +17,32 @@ namespace memory {
 class RegisteredMemory {
 
 public:
+  RegisteredMemory(infinity::core::Context *context, uint64_t sizeInBytes);
+  RegisteredMemory(infinity::core::Context *context, void *data,
+                   uint64_t sizeInBytes);
+  ~RegisteredMemory();
 
-	 RegisteredMemory(infinity::core::Context *context, uint64_t sizeInBytes);
-	 RegisteredMemory(infinity::core::Context *context, void *data, uint64_t sizeInBytes);
-	 ~RegisteredMemory();
+  void *getData();
 
-	 void * getData();
+  uint64_t getSizeInBytes();
 
-	 uint64_t getSizeInBytes();
+  ibv_mr *getRegion();
 
-	 ibv_mr * getRegion();
-
-	 RegisteredMemory(const RegisteredMemory&) = delete;
-	 RegisteredMemory(const RegisteredMemory&&) = delete;
-	 RegisteredMemory& operator=(const RegisteredMemory&) = delete;
-	 RegisteredMemory& operator=(RegisteredMemory&&other) = delete;
-
-protected:
-
-	 infinity::core::Context* context = nullptr;
-
-	 void *data = 0;
-	 uint64_t sizeInBytes = 0;
-
-	 ibv_mr *ibvMemoryRegion = nullptr;
+  RegisteredMemory(const RegisteredMemory &) = delete;
+  RegisteredMemory(const RegisteredMemory &&) = delete;
+  RegisteredMemory &operator=(const RegisteredMemory &) = delete;
+  RegisteredMemory &operator=(RegisteredMemory &&other) = delete;
 
 protected:
+  infinity::core::Context *context = nullptr;
 
-	 bool memoryAllocated = false;
+  void *data = 0;
+  uint64_t sizeInBytes = 0;
 
+  ibv_mr *ibvMemoryRegion = nullptr;
+
+protected:
+  bool memoryAllocated = false;
 };
 
 } /* namespace infinity */
