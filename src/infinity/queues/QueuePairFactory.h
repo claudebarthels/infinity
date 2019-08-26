@@ -10,6 +10,7 @@
 #define QUEUES_QUEUEPAIRFACTORY_H_
 
 #include <vector>
+#include <memory>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -22,7 +23,7 @@ namespace queues {
 class QueuePairFactory {
 public:
 
-	QueuePairFactory(infinity::core::Context *context);
+        QueuePairFactory(const std::shared_ptr<infinity::core::Context>& context);
 	~QueuePairFactory();
 
 	/**
@@ -33,23 +34,23 @@ public:
 	/**
 	 * Accept incoming connection request (passive side)
 	 */
-	QueuePair * acceptIncomingConnection(void *userData = nullptr, uint32_t userDataSizeInBytes = 0);
+        std::shared_ptr<QueuePair> acceptIncomingConnection(void *userData = nullptr, uint32_t userDataSizeInBytes = 0);
 
 	/**
 	 * Connect to remote machine (active side)
 	 */
-	QueuePair * connectToRemoteHost(const char* hostAddress, uint16_t port, void *userData = nullptr, uint32_t userDataSizeInBytes = 0);
+        std::shared_ptr<QueuePair> connectToRemoteHost(const char* hostAddress, uint16_t port, void *userData = nullptr, uint32_t userDataSizeInBytes = 0);
 
 	/**
 	 * Create loopback queue pair
 	 */
-        QueuePair * createLoopback(const std::vector<char>& userData);
+        std::shared_ptr<QueuePair> createLoopback(const std::vector<char>& userData);
 
 protected:
 
-	infinity::core::Context * context = nullptr;
+        std::shared_ptr<infinity::core::Context> context;
 
-	int32_t serverSocket = 0;
+	int32_t serverSocket = -1;
 
 private:
         int32_t readFromSocket(int32_t socket, char *buffer, uint32_t size);

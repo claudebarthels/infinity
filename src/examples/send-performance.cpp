@@ -57,16 +57,16 @@ int main(int argc, char **argv) {
                 --argc;
         }
 
-        infinity::core::Context *context = new infinity::core::Context();
-        infinity::queues::QueuePairFactory *qpFactory = new infinity::queues::QueuePairFactory(context);
-        infinity::queues::QueuePair *qp;
+        auto context = std::make_shared<infinity::core::Context>();
+        auto qpFactory = std::make_shared<infinity::queues::QueuePairFactory>(context);
+	std::shared_ptr<infinity::queues::QueuePair> qp;
 
         if (isServer) {
 
                 std::cout << "Creating buffers to receive a messages\n";
-                infinity::memory::Buffer **receiveBuffers = new infinity::memory::Buffer *[BUFFER_COUNT];
+		std::vector<std::shared_ptr<infinity::memory::Buffer>> receiveBuffers;
                 for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
-                        receiveBuffers[i] = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE);
+		        receiveBuffers.emplace_back(std::make_shared<infinity::memory::Buffer>(context, MAX_BUFFER_SIZE));
                         context->postReceiveBuffer(receiveBuffers[i]);
                 }
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv) {
 
                 std::cout << "Waiting for first message (first message has additional setup costs)\n";
                 infinity::core::receive_element_t receiveElement;
-                while (!context->receive(&receiveElement));
+                while (!context->receive(receiveElement));
                 context->postReceiveBuffer(receiveElement.buffer);
 
                 std::cout << "Performing measurement\n";
@@ -90,7 +90,7 @@ int main(int argc, char **argv) {
 
                         uint32_t numberOfReceivedMessages = 0;
                         while (numberOfReceivedMessages < OPERATIONS_COUNT) {
-                                while (!context->receive(&receiveElement));
+                                while (!context->receive(receiveElement));
                                 ++numberOfReceivedMessages;
                                 context->postReceiveBuffer(receiveElement.buffer);
                         }
@@ -101,30 +101,26 @@ int main(int argc, char **argv) {
                 std::cout << "All messages received\n";
 
                 std::cout << "Sending notification to client\n";
-                infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, 1);
-                qp->send(sendBuffer, context->defaultRequestToken);
-                context->defaultRequestToken->waitUntilCompleted();
+                auto sendBuffer = std::make_shared<infinity::memory::Buffer>(context, 1);
+                infinity::requests::RequestToken requestToken(context);
+                qp->send(sendBuffer, &requestToken);
+                requestToken.waitUntilCompleted();
 
                 std::cout << "Clean up\n";
-                for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
-                        delete receiveBuffers[i];
-                }
-                delete receiveBuffers;
-                delete sendBuffer;
-
         } else {
 
                 std::cout << "Connecting to remote node " << server_ip << ":" << port_number << "\n";
                 qp = qpFactory->connectToRemoteHost(server_ip, port_number);
 
                 std::cout << "Creating buffers\n";
-                infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE);
-                infinity::memory::Buffer *receiveBuffer = new infinity::memory::Buffer(context, 1);
+                auto sendBuffer = std::make_shared<infinity::memory::Buffer>(context, MAX_BUFFER_SIZE);
+                auto receiveBuffer = std::make_shared<infinity::memory::Buffer>(context, 1);
                 context->postReceiveBuffer(receiveBuffer);
 
                 std::cout << "Sending first message\n";
-                qp->send(sendBuffer, sendBuffer->getSizeInBytes(), context->defaultRequestToken);
-                context->defaultRequestToken->waitUntilCompleted();
+                infinity::requests::RequestToken defaultRequestToken(context);
+                qp->send(sendBuffer, sendBuffer->getSizeInBytes(), &defaultRequestToken);
+                defaultRequestToken.waitUntilCompleted();
 
                 std::cout << "Performing measurement\n";
                 uint32_t rounds = (uint32_t) log2(MAX_BUFFER_SIZE);
@@ -165,15 +161,8 @@ int main(int argc, char **argv) {
 
                 std::cout << "Waiting for notification from server\n";
                 infinity::core::receive_element_t receiveElement;
-                while (!context->receive(&receiveElement));
-
-                delete receiveBuffer;
-                delete sendBuffer;
+                while (!context->receive(receiveElement));
         }
-
-        delete qp;
-        delete qpFactory;
-        delete context;
 
         return 0;
 

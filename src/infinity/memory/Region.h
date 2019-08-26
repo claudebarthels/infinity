@@ -47,7 +47,7 @@ public:
 
 protected:
 
-	infinity::core::Context* context = nullptr;
+        std::shared_ptr<infinity::core::Context> context;
 	RegionType memoryRegionType;
 	ibv_mr *ibvMemoryRegion = nullptr;
 

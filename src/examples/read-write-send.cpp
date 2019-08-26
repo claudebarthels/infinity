@@ -50,9 +50,9 @@ int main(int argc, char **argv) {
                 --argc;
         }
 
-        infinity::core::Context *context = new infinity::core::Context();
-        infinity::queues::QueuePairFactory *qpFactory = new  infinity::queues::QueuePairFactory(context);
-        infinity::queues::QueuePair *qp;
+        auto context = std::make_shared<infinity::core::Context>();
+        auto qpFactory = std::make_shared<infinity::queues::QueuePairFactory>(context);
+	std::shared_ptr<infinity::queues::QueuePair> qp;
 
         if(isServer) {
 
@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
                 infinity::memory::RegionToken bufferToken = bufferToReadWrite->createRegionToken();
 
                 std::cout << "Creating buffers to receive a message\n";
-                infinity::memory::Buffer *bufferToReceive = new infinity::memory::Buffer(context, 128);
+                auto bufferToReceive = std::make_shared<infinity::memory::Buffer>(context, 128);
                 context->postReceiveBuffer(bufferToReceive);
 
                 std::cout << "Setting up connection (blocking)\n";
@@ -69,11 +69,10 @@ int main(int argc, char **argv) {
                 qp = qpFactory->acceptIncomingConnection(&bufferToken, sizeof(bufferToken));
                 std::cout << "Waiting for message (blocking)\n";
                 infinity::core::receive_element_t receiveElement;
-                while(!context->receive(&receiveElement));
+                while(!context->receive(receiveElement));
 
                 std::cout << "Message received\n";
                 delete bufferToReadWrite;
-                delete bufferToReceive;
 
         } else {
 
@@ -82,8 +81,8 @@ int main(int argc, char **argv) {
                 infinity::memory::RegionToken *remoteBufferToken = (infinity::memory::RegionToken *) qp->getUserData();
 
                 std::cout << "Creating buffers\n";
-                infinity::memory::Buffer *buffer1Sided = new infinity::memory::Buffer(context, 128);
-                infinity::memory::Buffer *buffer2Sided = new infinity::memory::Buffer(context, 128);
+                auto buffer1Sided = std::make_shared<infinity::memory::Buffer>(context, 128);
+                auto buffer2Sided = std::make_shared<infinity::memory::Buffer>(context, 128);
 
                 std::cout << "Reading content from remote buffer\n";
                 infinity::requests::RequestToken requestToken(context);
@@ -98,14 +97,7 @@ int main(int argc, char **argv) {
                 qp->send(buffer2Sided, &requestToken);
                 requestToken.waitUntilCompleted();
 
-                delete buffer1Sided;
-                delete buffer2Sided;
-
         }
-
-        delete qp;
-        delete qpFactory;
-        delete context;
 
         return 0;
 

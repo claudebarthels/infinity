@@ -20,11 +20,11 @@
 namespace infinity {
 namespace utils {
 
-char* Address::getIpAddressOfInterface(const char* interfaceName) {
+std::string Address::getIpAddressOfInterface(const char* interfaceName) {
 
 	struct ifaddrs *ifAddr = nullptr;
 	struct ifaddrs *ifa = nullptr;
-	char *ipAddress = (char*) calloc(16, sizeof(char));
+	char ipAddress[16];
 
 	int returnValue = getifaddrs(&ifAddr);
 	INFINITY_ASSERT(returnValue != -1, "[INFINITY][UTILS][ADDRESS] Cannot read interface list.\n");

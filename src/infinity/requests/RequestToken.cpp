@@ -11,7 +11,7 @@
 namespace infinity {
 namespace requests {
 
-RequestToken::RequestToken(infinity::core::Context *context) :
+RequestToken::RequestToken(std::shared_ptr<infinity::core::Context> context) :
 		context(context) {
 	this->success.store(false);
 	this->completed.store(false);
@@ -58,11 +58,11 @@ void RequestToken::reset() {
 	this->immediateValueValid = false;
 }
 
-void RequestToken::setRegion(infinity::memory::Region* region) {
+void RequestToken::setRegion(std::shared_ptr<infinity::memory::Region> region) {
 	this->region = region;
 }
 
-infinity::memory::Region* RequestToken::getRegion() {
+std::shared_ptr<infinity::memory::Region> RequestToken::getRegion() {
 	return this->region;
 }
 

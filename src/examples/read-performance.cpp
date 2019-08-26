@@ -59,14 +59,14 @@ int main(int argc, char **argv) {
                 --argc;
         }
 
-        infinity::core::Context *context = new infinity::core::Context();
-        infinity::queues::QueuePairFactory *qpFactory = new infinity::queues::QueuePairFactory(context);
-        infinity::queues::QueuePair *qp;
+        auto context = std::make_shared<infinity::core::Context>();
+        auto qpFactory = std::make_shared<infinity::queues::QueuePairFactory>(context);
+	std::shared_ptr<infinity::queues::QueuePair> qp;
 
         if (isServer) {
 
                 std::cout << "Creating buffers to be read from\n";
-                std::vector<std::unique_ptr<infinity::memory::Buffer>> readBuffers;
+                std::vector<std::shared_ptr<infinity::memory::Buffer>> readBuffers;
                 std::vector<infinity::memory::RegionToken> regionTokens;
                 for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
                         readBuffers.emplace_back(std::make_unique<infinity::memory::Buffer>(context, MAX_BUFFER_SIZE));
@@ -80,11 +80,11 @@ int main(int argc, char **argv) {
                 qpFactory->bindToPort(port_number);
                 qp = qpFactory->acceptIncomingConnection(&regionTokens[0], sizeof(regionTokens[0])*regionTokens.size());
 
-                infinity::memory::Buffer receiveBuffer(context, 1);
-                context->postReceiveBuffer(&receiveBuffer);
+                auto receiveBuffer = std::make_shared<infinity::memory::Buffer>(context, 1);
+                context->postReceiveBuffer(receiveBuffer);
                 std::cout << "Waiting for notification from client\n";
                 infinity::core::receive_element_t receiveElement;
-                while (!context->receive(&receiveElement));
+                while (!context->receive(receiveElement));
                 std::cout << "Clean up\n";
 
         } else {
@@ -95,8 +95,7 @@ int main(int argc, char **argv) {
                 infinity::memory::RegionToken *remoteBufferTokens = (infinity::memory::RegionToken*) qp->getUserData();
 
                 std::cout << "Creating buffers\n";
-                infinity::memory::Buffer *readBuffer = new infinity::memory::Buffer(context, MAX_BUFFER_SIZE);
-                infinity::memory::Buffer *receiveBuffer = new infinity::memory::Buffer(context, 1);
+                auto readBuffer = std::make_shared<infinity::memory::Buffer>(context, MAX_BUFFER_SIZE);
 
                 std::cout << "Performing measurement\n";
                 uint32_t rounds = (uint32_t) log2(MAX_BUFFER_SIZE);
@@ -135,19 +134,12 @@ int main(int argc, char **argv) {
                 }
 
 		  std::cout << "Sending notification to server\n";
-		  infinity::memory::Buffer *sendBuffer = new infinity::memory::Buffer(context, 1);
-		  qp->send(sendBuffer, context->defaultRequestToken);
-		  context->defaultRequestToken->waitUntilCompleted();
-		  delete sendBuffer;
-
-                delete receiveBuffer;
-                delete readBuffer;
+		  auto sendBuffer = std::make_shared<infinity::memory::Buffer>(context, 1);
+		  infinity::requests::RequestToken defaultRequestToken(context);
+		  qp->send(sendBuffer, &defaultRequestToken);
+		  defaultRequestToken.waitUntilCompleted();
         }
 
-
-        delete qp;
-        delete qpFactory;
-        delete context;
 
         return 0;
 

@@ -19,8 +19,6 @@
 #include <infinity/requests/RequestToken.h>
 #include <infinity/utils/Debug.h>
 
-#define MAX(a,b) ((a) > (b) ? (a) : (b))
-
 namespace infinity {
 namespace core {
 
@@ -55,29 +53,21 @@ Context::Context(uint16_t device, uint16_t devicePort) {
 	this->ibvDevicePort = devicePort;
 
 	// Allocate completion queues
-	this->ibvSendCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::sendCompletionQueueLength(this), 1), nullptr, nullptr, 0);
-	this->ibvReceiveCompletionQueue = ibv_create_cq(this->ibvContext, MAX(Configuration::recvCompletionQueueLength(this), 1), nullptr, nullptr, 0);
+	this->ibvSendCompletionQueue = ibv_create_cq(this->ibvContext, std::max(Configuration::sendCompletionQueueLength(this), 1u), nullptr, nullptr, 0);
+	this->ibvReceiveCompletionQueue = ibv_create_cq(this->ibvContext, std::max(Configuration::recvCompletionQueueLength(this), 1u), nullptr, nullptr, 0);
 
 	// Allocate shared receive queue
 	ibv_srq_init_attr sia;
 	memset(&sia, 0, sizeof(ibv_srq_init_attr));
 	sia.srq_context = this->ibvContext;
-	sia.attr.max_wr = MAX(Configuration::sharedRecvQueueLength(this), 1);
+	sia.attr.max_wr = std::max(Configuration::sharedRecvQueueLength(this), 1u);
 	sia.attr.max_sge = 1;
 	this->ibvSharedReceiveQueue = ibv_create_srq(this->ibvProtectionDomain, &sia);
 	INFINITY_ASSERT(this->ibvSharedReceiveQueue != nullptr, "[INFINITY][CORE][CONTEXT] Could not allocate shared receive queue.\n");
 
-	// Create a default request token
-	defaultRequestToken = new infinity::requests::RequestToken(this);
-	defaultAtomic = new infinity::memory::Atomic(this);
-
 }
 
 Context::~Context() {
-
-	// Delete default token
-	delete defaultRequestToken;
-	delete defaultAtomic;
 
 	// Destroy shared receive queue
 	int returnValue = ibv_destroy_srq(this->ibvSharedReceiveQueue);
@@ -99,7 +89,7 @@ Context::~Context() {
 
 }
 
-void Context::postReceiveBuffer(infinity::memory::Buffer* buffer) {
+void Context::postReceiveBuffer(std::shared_ptr<infinity::memory::Buffer> buffer) {
 
 	INFINITY_ASSERT(buffer->getSizeInBytes() <= std::numeric_limits<uint32_t>::max(),
 			"[INFINITY][CORE][CONTEXT] Cannot post receive buffer which is larger than max(uint32_t).\n");
@@ -114,7 +104,8 @@ void Context::postReceiveBuffer(infinity::memory::Buffer* buffer) {
 	// Create work request
 	ibv_recv_wr wr;
 	memset(&wr, 0, sizeof(ibv_recv_wr));
-	wr.wr_id = reinterpret_cast<uint64_t>(buffer);
+	wr.wr_id = reinterpret_cast<uint64_t>(buffer.get());
+
 	wr.next = nullptr;
 	wr.sg_list = &isge;
 	wr.num_sge = 1;
@@ -133,38 +124,37 @@ void Context::getDeviceAttr(ibv_device_attr * device_attr)
 	INFINITY_ASSERT(returnValue == 0, "[INFINITY][CORE][CONTEXT] Cannot get device attributes.\n");
 }
 
-bool Context::receive(receive_element_t* receiveElement) {
+bool Context::receive(receive_element_t& receiveElement) {
 
-	return receive(&(receiveElement->buffer), &(receiveElement->bytesWritten), &(receiveElement->immediateValue), &(receiveElement->immediateValueValid), &(receiveElement->queuePair));
+	return receive(receiveElement.buffer, receiveElement.bytesWritten, receiveElement.immediateValue, receiveElement.immediateValueValid, receiveElement.queuePair);
 
 }
 
-bool Context::receive(infinity::memory::Buffer** buffer, uint32_t *bytesWritten, uint32_t *immediateValue, bool *immediateValueValid, infinity::queues::QueuePair **queuePair) {
+bool Context::receive(std::shared_ptr<infinity::memory::Buffer>& buffer, uint32_t &bytesWritten, uint32_t &immediateValue, bool &immediateValueValid, std::shared_ptr<infinity::queues::QueuePair>& queuePair) {
 
 	ibv_wc wc;
 	if (ibv_poll_cq(this->ibvReceiveCompletionQueue, 1, &wc) > 0) {
 
 		if(wc.opcode == IBV_WC_RECV) {
-			*(buffer) = reinterpret_cast<infinity::memory::Buffer*>(wc.wr_id);
-			*(bytesWritten) = wc.byte_len;
+			auto receiveBuffer = reinterpret_cast<infinity::memory::Buffer*>(wc.wr_id);		  
+			buffer = receiveBuffer->getptr();
+			bytesWritten = wc.byte_len;
 		} else if (wc.opcode == IBV_WC_RECV_RDMA_WITH_IMM) {
-			*(buffer) = nullptr;
-			*(bytesWritten) = wc.byte_len;
-			infinity::memory::Buffer* receiveBuffer = reinterpret_cast<infinity::memory::Buffer*>(wc.wr_id);
-			this->postReceiveBuffer(receiveBuffer);
+		        buffer.reset();
+			bytesWritten = wc.byte_len;
+			auto receiveBuffer = reinterpret_cast<infinity::memory::Buffer*>(wc.wr_id);
+			this->postReceiveBuffer(receiveBuffer->getptr());
 		}
 
 		if(wc.wc_flags & IBV_WC_WITH_IMM) {
-			*(immediateValue) = ntohl(wc.imm_data);
-			*(immediateValueValid) = true;
+			immediateValue = ntohl(wc.imm_data);
+			immediateValueValid = true;
 		} else {
-			*(immediateValue) = 0;
-			*(immediateValueValid) = false;
+			immediateValue = 0;
+			immediateValueValid = false;
 		}
 
-		if(queuePair != nullptr) {
-			*(queuePair) = queuePairMap.at(wc.qp_num);
-		}
+		queuePair = queuePairMap.at(wc.qp_num);
 
 		return true;
 	}
@@ -195,7 +185,7 @@ bool Context::pollSendCompletionQueue() {
 
 }
 
-void Context::registerQueuePair(infinity::queues::QueuePair* queuePair) {
+void Context::registerQueuePair(std::shared_ptr<infinity::queues::QueuePair> queuePair) {
 	this->queuePairMap.insert({queuePair->getQueuePairNumber(), queuePair});
 }
 

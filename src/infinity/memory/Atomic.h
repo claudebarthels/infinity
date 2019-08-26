@@ -22,7 +22,7 @@ class Atomic : public Region {
 
 public:
 
-	Atomic(infinity::core::Context *context);
+        Atomic(std::shared_ptr<infinity::core::Context> context);
 	virtual ~Atomic();
 
 public:

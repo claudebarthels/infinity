@@ -22,12 +22,12 @@ class RequestToken {
 
 public:
 
-	RequestToken(infinity::core::Context *context);
+        RequestToken(std::shared_ptr<infinity::core::Context> context);
 
 	void reset();
 
-	void setRegion(infinity::memory::Region * region);
-	infinity::memory::Region * getRegion();
+        void setRegion(std::shared_ptr<infinity::memory::Region> region);
+        std::shared_ptr<infinity::memory::Region> getRegion();
 
 	void setCompleted(bool success);
 	bool wasSuccessful();
@@ -51,8 +51,8 @@ public:
 
 protected:
 
-	infinity::core::Context * const context = nullptr;
-	infinity::memory::Region * region = nullptr;
+        std::shared_ptr<infinity::core::Context> const context;
+        std::shared_ptr<infinity::memory::Region> region;
 
 	std::atomic<bool> completed;
 	std::atomic<bool> success;

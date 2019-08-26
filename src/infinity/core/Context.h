@@ -9,6 +9,7 @@
 #ifndef CORE_CONTEXT_H_
 #define CORE_CONTEXT_H_
 
+#include <memory>
 #include <stdlib.h>
 #include <stdint.h>
 #include <unordered_map>
@@ -40,11 +41,11 @@ namespace infinity {
 namespace core {
 
 typedef struct {
-	infinity::memory::Buffer *buffer = nullptr;
+        std::shared_ptr<infinity::memory::Buffer> buffer;
 	uint32_t bytesWritten = 0;
 	uint32_t immediateValue = 0;
 	bool immediateValueValid = false;
-	infinity::queues::QueuePair *queuePair = nullptr;
+        std::shared_ptr<infinity::queues::QueuePair> queuePair;
 } receive_element_t;
 
 class Context {
@@ -79,21 +80,16 @@ public:
 	/**
 	 * Check if receive operation completed
 	 */
-	bool receive(receive_element_t *receiveElement);
-	bool receive(infinity::memory::Buffer **buffer, uint32_t *bytesWritten, uint32_t *immediateValue, bool *immediateValueValid, infinity::queues::QueuePair **queuePair = nullptr);
+	bool receive(receive_element_t &receiveElement);
+        bool receive(std::shared_ptr<infinity::memory::Buffer>& buffer, uint32_t &bytesWritten, uint32_t &immediateValue, bool &immediateValueValid, std::shared_ptr<infinity::queues::QueuePair>& queuePair);
 
 	/**
 	 * Post a new buffer for receiving messages
 	 */
-	void postReceiveBuffer(infinity::memory::Buffer *buffer);
+        void postReceiveBuffer(std::shared_ptr<infinity::memory::Buffer> buffer);
 
 public:
         void getDeviceAttr(ibv_device_attr * device_attr);
-
-public:
-
-	infinity::requests::RequestToken * defaultRequestToken = nullptr;
-	infinity::memory::Atomic * defaultAtomic = nullptr;
 
 protected:
 
@@ -163,8 +159,8 @@ protected:
 
 protected:
 
-	void registerQueuePair(infinity::queues::QueuePair *queuePair);
-	std::unordered_map<uint32_t, infinity::queues::QueuePair *> queuePairMap;
+        void registerQueuePair(std::shared_ptr<infinity::queues::QueuePair> queuePair);
+        std::unordered_map<uint32_t, std::shared_ptr<infinity::queues::QueuePair>> queuePairMap;
 
 };
 

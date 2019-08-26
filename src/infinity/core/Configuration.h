@@ -9,6 +9,7 @@
 #ifndef CORE_CONFIGURATION_H_
 #define CORE_CONFIGURATION_H_
 
+#include <memory>
 #include <stdint.h>
 
 namespace infinity {
@@ -27,13 +28,17 @@ public:
 
 	static const uint32_t recvCompletionQueueLength(Context * context); 		// Must be less than MAX_CQE
 
+        static const uint32_t sendCompletionQueueLength(std::shared_ptr<Context>& context); 		// Must be less than MAX_CQE
+
+        static const uint32_t recvCompletionQueueLength(std::shared_ptr<Context>& context); 		// Must be less than MAX_CQE
+
         static const uint32_t sharedRecvQueueLength(Context * context); 		// Must be less than MAX_SRQ_WR
 
 	static const uint32_t maxNumberOfOutstandingRequests(Context * context);      	// Must be less than (MAX_QP_WR * MAX_QP)
 									// Since we use one single shared receive queue,
 									// this number should be less than MAX_SRQ_WR
 
-        static const uint32_t maxNumberOfSGEElements(Context * context);		// Must be less than MAX_SGE
+        static const uint32_t maxNumberOfSGEElements(const std::shared_ptr<Context>& context);		// Must be less than MAX_SGE
 
 public:
 

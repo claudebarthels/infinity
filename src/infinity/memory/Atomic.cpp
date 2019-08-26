@@ -13,7 +13,7 @@
 namespace infinity {
 namespace memory {
 
-Atomic::Atomic(infinity::core::Context* context) {
+Atomic::Atomic(std::shared_ptr<infinity::core::Context> context) {
 
 	this->context = context;
 	this->sizeInBytes = sizeof(uint64_t);

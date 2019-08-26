@@ -10,6 +10,7 @@
 #define UTILS_ADDRESS_H_
 
 #include <stdint.h>
+#include <string>
 
 namespace infinity {
 namespace utils {
@@ -18,7 +19,7 @@ class Address {
 
 public:
 
-	static char * getIpAddressOfInterface(const char *interfaceName);
+        static std::string getIpAddressOfInterface(const char *interfaceName);
 	static uint32_t getIpAddressAsUint32(const char *ipAddress);
 
 };

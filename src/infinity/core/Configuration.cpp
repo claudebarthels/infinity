@@ -18,6 +18,17 @@ const uint32_t infinity::core::Configuration::recvCompletionQueueLength(Context 
   return deviceAttributes.max_qp_wr * .25;
 }
 
+const uint32_t infinity::core::Configuration::sendCompletionQueueLength(std::shared_ptr<Context>& context)
+{
+  return sendCompletionQueueLength(context.get());
+}
+
+const uint32_t infinity::core::Configuration::recvCompletionQueueLength(std::shared_ptr<Context>& context)
+{
+  return recvCompletionQueueLength(context.get());
+}
+
+
 // Must be less than MAX_SRQ_WR
 const uint32_t infinity::core::Configuration::sharedRecvQueueLength(Context * context)
 {
@@ -35,7 +46,7 @@ const uint32_t infinity::core::Configuration::maxNumberOfOutstandingRequests(Con
 }
 
 
-const uint32_t infinity::core::Configuration::maxNumberOfSGEElements(Context * context)
+const uint32_t infinity::core::Configuration::maxNumberOfSGEElements(const std::shared_ptr<Context>& context)
 {
   ibv_device_attr deviceAttributes;
   context->getDeviceAttr(&deviceAttributes);
