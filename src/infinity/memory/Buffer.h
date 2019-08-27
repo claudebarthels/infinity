@@ -9,30 +9,44 @@
 #ifndef MEMORY_BUFFER_H_
 #define MEMORY_BUFFER_H_
 
-#include <memory>
 #include <infinity/core/Context.h>
 #include <infinity/memory/Region.h>
 #include <infinity/memory/RegisteredMemory.h>
+#include <memory>
 
 namespace infinity {
 namespace memory {
 
-/*
-   Buffers should only be created as shared_ptrs because of the code in
-   Context that calls getptr(), which will produce undefined behaviour
-   if the Buffer is not owned by a shared_ptr.
+/**
+
  */
 class Buffer : public Region,
                public std::enable_shared_from_this<infinity::memory::Buffer> {
 
+private:
+    // The Token class is used to make the Buffer constructors
+    // unreachable from outside the Buffer class, but still let
+    // Buffer create std::shared_ptrs.
+    class Token {};
 public:
+  static std::shared_ptr<Buffer>
+  createBuffer(std::shared_ptr<infinity::core::Context> context,
+               uint64_t sizeInBytes);
+  static std::shared_ptr<Buffer>
+  createBuffer(std::shared_ptr<infinity::core::Context> context,
+               infinity::memory::RegisteredMemory *memory, uint64_t offset,
+               uint64_t sizeInBytes);
+  static std::shared_ptr<Buffer>
+  createBuffer(std::shared_ptr<infinity::core::Context> context, void *memory,
+               uint64_t sizeInBytes);
+
   Buffer(std::shared_ptr<infinity::core::Context> context,
-         uint64_t sizeInBytes);
+         uint64_t sizeInBytes, Token);
   Buffer(std::shared_ptr<infinity::core::Context> context,
          infinity::memory::RegisteredMemory *memory, uint64_t offset,
-         uint64_t sizeInBytes);
+         uint64_t sizeInBytes, Token);
   Buffer(std::shared_ptr<infinity::core::Context> context, void *memory,
-         uint64_t sizeInBytes);
+         uint64_t sizeInBytes, Token);
   ~Buffer();
   Buffer(const Buffer &) = delete;
   Buffer(const Buffer &&) = delete;

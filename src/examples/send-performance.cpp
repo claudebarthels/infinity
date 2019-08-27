@@ -7,17 +7,17 @@
  */
 
 #include <iomanip>
-#include <stdlib.h>
-#include <unistd.h>
 #include <math.h>
-#include <time.h>
+#include <stdlib.h>
 #include <sys/time.h>
+#include <time.h>
+#include <unistd.h>
 
 #include <infinity/core/Context.h>
-#include <infinity/queues/QueuePairFactory.h>
-#include <infinity/queues/QueuePair.h>
 #include <infinity/memory/Buffer.h>
 #include <infinity/memory/RegionToken.h>
+#include <infinity/queues/QueuePair.h>
+#include <infinity/queues/QueuePairFactory.h>
 #include <infinity/requests/RequestToken.h>
 
 #define BUFFER_COUNT 128
@@ -65,10 +65,10 @@ int main(int argc, char **argv) {
   if (isServer) {
 
     std::cout << "Creating buffers to receive a messages\n";
-    std::vector<std::shared_ptr<infinity::memory::Buffer> > receiveBuffers;
+    std::vector<std::shared_ptr<infinity::memory::Buffer>> receiveBuffers;
     for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
       receiveBuffers.emplace_back(
-          std::make_shared<infinity::memory::Buffer>(context, MAX_BUFFER_SIZE));
+          infinity::memory::Buffer::createBuffer(context, MAX_BUFFER_SIZE));
       context->postReceiveBuffer(receiveBuffers[i]);
     }
 
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
     std::cout << "All messages received\n";
 
     std::cout << "Sending notification to client\n";
-    auto sendBuffer = std::make_shared<infinity::memory::Buffer>(context, 1);
+    auto sendBuffer = infinity::memory::Buffer::createBuffer(context, 1);
     infinity::requests::RequestToken requestToken(context);
     qp->send(sendBuffer, &requestToken);
     requestToken.waitUntilCompleted();
@@ -120,9 +120,8 @@ int main(int argc, char **argv) {
     qp = qpFactory->connectToRemoteHost(server_ip, port_number);
 
     std::cout << "Creating buffers\n";
-    auto sendBuffer =
-        std::make_shared<infinity::memory::Buffer>(context, MAX_BUFFER_SIZE);
-    auto receiveBuffer = std::make_shared<infinity::memory::Buffer>(context, 1);
+    auto sendBuffer = infinity::memory::Buffer::createBuffer(context, MAX_BUFFER_SIZE);
+    auto receiveBuffer = infinity::memory::Buffer::createBuffer(context, 1);
     context->postReceiveBuffer(receiveBuffer);
 
     std::cout << "Sending first message\n";

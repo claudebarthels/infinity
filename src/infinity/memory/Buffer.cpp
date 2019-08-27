@@ -14,13 +14,31 @@
 #include <infinity/core/Configuration.h>
 #include <infinity/utils/Debug.h>
 
-#define MIN(a, b) (((a) < (b)) ? (a) : (b))
-
 namespace infinity {
 namespace memory {
 
+std::shared_ptr<Buffer>
+Buffer::createBuffer(std::shared_ptr<infinity::core::Context> context,
+                     uint64_t sizeInBytes) {
+  return std::make_shared<Buffer>(context, sizeInBytes, Token());
+}
+
+std::shared_ptr<Buffer>
+Buffer::createBuffer(std::shared_ptr<infinity::core::Context> context,
+                     infinity::memory::RegisteredMemory *memory,
+                     uint64_t offset, uint64_t sizeInBytes) {
+  return std::make_shared<Buffer>(context, memory, offset, sizeInBytes,
+                                  Token());
+}
+
+std::shared_ptr<Buffer>
+Buffer::createBuffer(std::shared_ptr<infinity::core::Context> context,
+                     void *memory, uint64_t sizeInBytes) {
+  return std::make_shared<Buffer>(context, memory, sizeInBytes, Token());
+}
+
 Buffer::Buffer(std::shared_ptr<infinity::core::Context> context,
-               uint64_t sizeInBytes) {
+               uint64_t sizeInBytes, Token) {
 
   this->context = context;
   this->sizeInBytes = sizeInBytes;
@@ -47,7 +65,7 @@ Buffer::Buffer(std::shared_ptr<infinity::core::Context> context,
 
 Buffer::Buffer(std::shared_ptr<infinity::core::Context> context,
                infinity::memory::RegisteredMemory *memory, uint64_t offset,
-               uint64_t sizeInBytes) {
+               uint64_t sizeInBytes, Token) {
 
   this->context = context;
   this->sizeInBytes = sizeInBytes;
@@ -61,7 +79,7 @@ Buffer::Buffer(std::shared_ptr<infinity::core::Context> context,
 }
 
 Buffer::Buffer(std::shared_ptr<infinity::core::Context> context, void *memory,
-               uint64_t sizeInBytes) {
+               uint64_t sizeInBytes, Token) {
 
   this->context = context;
   this->sizeInBytes = sizeInBytes;
@@ -94,14 +112,14 @@ void *Buffer::getData() { return reinterpret_cast<void *>(this->getAddress()); }
 void Buffer::resize(uint64_t newSize, void *newData) {
 
   void *oldData = this->data;
-  uint32_t oldSize = this->sizeInBytes;
+  uint64_t oldSize = this->sizeInBytes;
 
   if (newData == nullptr) {
     newData = this->data;
   }
 
   if (oldData != newData) {
-    uint64_t copySize = MIN(newSize, oldSize);
+    uint64_t copySize = std::min(newSize, oldSize);
     memcpy(newData, oldData, copySize);
   }
 

@@ -6,15 +6,15 @@
  *
  */
 
+#include <cassert>
 #include <stdlib.h>
 #include <unistd.h>
-#include <cassert>
 
 #include <infinity/core/Context.h>
-#include <infinity/queues/QueuePairFactory.h>
-#include <infinity/queues/QueuePair.h>
 #include <infinity/memory/Buffer.h>
 #include <infinity/memory/RegionToken.h>
+#include <infinity/queues/QueuePair.h>
+#include <infinity/queues/QueuePairFactory.h>
 #include <infinity/requests/RequestToken.h>
 
 // Usage: ./progam -s for server and ./program for client component
@@ -57,13 +57,13 @@ int main(int argc, char **argv) {
   if (isServer) {
 
     std::cout << "Creating buffers to read from and write to\n";
-    auto bufferToReadWrite = std::make_shared<infinity::memory::Buffer>(context, 128);
+    auto bufferToReadWrite =
+        infinity::memory::Buffer::createBuffer(context, 128);
     infinity::memory::RegionToken bufferToken =
         bufferToReadWrite->createRegionToken();
 
     std::cout << "Creating buffers to receive a message\n";
-    auto bufferToReceive =
-        std::make_shared<infinity::memory::Buffer>(context, 128);
+    auto bufferToReceive = infinity::memory::Buffer::createBuffer(context, 128);
     context->postReceiveBuffer(bufferToReceive);
 
     std::cout << "Setting up connection (blocking)\n";
@@ -84,10 +84,8 @@ int main(int argc, char **argv) {
         (infinity::memory::RegionToken *)qp->getUserData();
 
     std::cout << "Creating buffers\n";
-    auto buffer1Sided =
-        std::make_shared<infinity::memory::Buffer>(context, 128);
-    auto buffer2Sided =
-        std::make_shared<infinity::memory::Buffer>(context, 128);
+    auto buffer1Sided = infinity::memory::Buffer::createBuffer(context, 128);
+    auto buffer2Sided = infinity::memory::Buffer::createBuffer(context, 128);
 
     std::cout << "Reading content from remote buffer\n";
     infinity::requests::RequestToken requestToken(context);
