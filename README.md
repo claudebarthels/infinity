@@ -29,7 +29,7 @@ auto qpFactory = std::make_shared<infinity::queues::QueuePairFactory>(context);
 auto qp = qpFactory->connectToRemoteHost(SERVER_IP, PORT_NUMBER);
 
 // Create and register a buffer with the network
-auto localBuffer = std::make_shared<infinity::memory::Buffer>(context, BUFFER_SIZE);
+auto localBuffer = infinity::memory::Buffer::createBuffer(context, BUFFER_SIZE);
 
 // Get information from a remote buffer
 infinity::memory::RegionToken remoteBufferToken(REMOTE_BUFFER_INFO);
