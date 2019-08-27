@@ -2,6 +2,12 @@
 
 Infinity is a simple, powerful, object-oriented abstraction of ibVerbs. The library enables users to build sophisticated applications that use Remote Direct Memory Access (RDMA) without sacrificing performance. It significantly lowers the barrier to get started with RDMA programming. Infinity provides support for two-sided (send/receive) as well as one-sided (read/write/atomic) operations. The library is written in C++ and has been ported to Rust ([Infinity-Rust](https://github.com/utaal/infinity-rust/)) by @utaal.
 
+## Differences from the fork
+
+My version is more idiomatic C++. It doesn't use manual memory management, uses C++
+std::vector for passing variable length arrays, and out parameters are declared by references rather
+than as pointers.
+
 ## Installation
 
 Installing ''ibVerbs'' is a prerequisite before building Infinity. The output is located in ''release/libinfinity.a''.
