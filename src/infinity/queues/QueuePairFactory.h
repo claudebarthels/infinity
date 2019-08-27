@@ -29,6 +29,7 @@ public:
    * Bind to port for listening to incoming connections
    */
   void bindToPort(uint16_t port);
+  uint16_t getPort();
 
   /**
    * Accept incoming connection request (passive side)

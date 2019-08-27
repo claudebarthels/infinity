@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
       }
     }
 
-    std::cout << "Waiting for incoming connection\n";
+    std::cout << "Waiting for incoming connection on " << port_number << "\n";
     qpFactory->bindToPort(port_number);
     qp = qpFactory->acceptIncomingConnection(
         &regionTokens[0], sizeof(regionTokens[0]) * regionTokens.size());

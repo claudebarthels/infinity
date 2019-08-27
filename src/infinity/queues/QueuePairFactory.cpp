@@ -8,14 +8,14 @@
 
 #include "QueuePairFactory.h"
 
-#include <unistd.h>
-#include <string.h>
 #include <arpa/inet.h>
+#include <string.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 #include <infinity/core/Configuration.h>
-#include <infinity/utils/Debug.h>
 #include <infinity/utils/Address.h>
+#include <infinity/utils/Debug.h>
 
 namespace infinity {
 namespace queues {
@@ -74,6 +74,23 @@ void QueuePairFactory::bindToPort(uint16_t port) {
   INFINITY_DEBUG("[INFINITY][QUEUES][FACTORY] Accepting connections on IP "
                  "address %s and port %d.\n",
                  ipAddressOfDevice.c_str(), port);
+}
+
+/* Returns the port we have bound to; we don't just store the port we
+ passed into bindToPort so we can pass in a port of 0 and get an
+ ephemeral port.
+*/
+uint16_t QueuePairFactory::getPort() {
+  if (serverSocket) {
+    struct sockaddr_in my_address;
+    memset(&my_address, 0, sizeof(my_address));
+    socklen_t length = sizeof(my_address);
+    if (getsockname(serverSocket, reinterpret_cast<sockaddr *>(&my_address),
+                    &length) == 0) {
+      return ntohs(my_address.sin_port);
+    }
+  }
+  return 0;
 }
 
 int32_t QueuePairFactory::readFromSocket(int32_t socket, char *buffer,
