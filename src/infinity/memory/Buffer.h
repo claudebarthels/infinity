@@ -24,10 +24,11 @@ class Buffer : public Region,
                public std::enable_shared_from_this<infinity::memory::Buffer> {
 
 private:
-    // The Token class is used to make the Buffer constructors
-    // unreachable from outside the Buffer class, but still let
-    // Buffer create std::shared_ptrs.
-    class Token {};
+  // The Token class is used to make the Buffer constructors
+  // unreachable from outside the Buffer class, but still let
+  // Buffer create std::shared_ptrs.
+  class Token {};
+
 public:
   static std::shared_ptr<Buffer>
   createBuffer(std::shared_ptr<infinity::core::Context> context,
@@ -40,8 +41,8 @@ public:
   createBuffer(std::shared_ptr<infinity::core::Context> context, void *memory,
                uint64_t sizeInBytes);
 
-  Buffer(std::shared_ptr<infinity::core::Context> context,
-         uint64_t sizeInBytes, Token);
+  Buffer(std::shared_ptr<infinity::core::Context> context, uint64_t sizeInBytes,
+         Token);
   Buffer(std::shared_ptr<infinity::core::Context> context,
          infinity::memory::RegisteredMemory *memory, uint64_t offset,
          uint64_t sizeInBytes, Token);

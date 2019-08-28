@@ -56,7 +56,7 @@ public:
   /**
    * Destructor
    */
-  ~QueuePair();
+  ~QueuePair() noexcept(false);
 
   QueuePair(const QueuePair &) = delete;
   QueuePair(const QueuePair &&) = delete;

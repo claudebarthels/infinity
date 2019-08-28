@@ -219,10 +219,13 @@ QueuePairFactory::connectToRemoteHost(const char *hostAddress, uint16_t port,
   sockaddr_in remoteAddress;
   memset(&(remoteAddress), 0, sizeof(sockaddr_in));
   remoteAddress.sin_family = AF_INET;
-  struct hostent* hostEntry = gethostbyname(hostAddress);
-  INFINITY_ASSERT(hostEntry != nullptr, "[INFINITY][QUEUES][FACTORY] Unable to get IP address for %s: %s.\n",
-                  hostAddress, hstrerror(h_errno));
-  memcpy(&remoteAddress.sin_addr, hostEntry->h_addr_list[0], hostEntry->h_length);
+  struct hostent *hostEntry = gethostbyname(hostAddress);
+  INFINITY_ASSERT(
+      hostEntry != nullptr,
+      "[INFINITY][QUEUES][FACTORY] Unable to get IP address for %s: %s.\n",
+      hostAddress, hstrerror(h_errno));
+  memcpy(&remoteAddress.sin_addr, hostEntry->h_addr_list[0],
+         hostEntry->h_length);
 
   remoteAddress.sin_port = htons(port);
 

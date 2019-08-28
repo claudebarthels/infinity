@@ -65,7 +65,7 @@ int main(int argc, char **argv) {
   if (isServer) {
 
     std::cout << "Creating buffers to receive a messages\n";
-    std::vector<std::shared_ptr<infinity::memory::Buffer>> receiveBuffers;
+    std::vector<std::shared_ptr<infinity::memory::Buffer> > receiveBuffers;
     for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
       receiveBuffers.emplace_back(
           infinity::memory::Buffer::createBuffer(context, MAX_BUFFER_SIZE));
@@ -120,7 +120,8 @@ int main(int argc, char **argv) {
     qp = qpFactory->connectToRemoteHost(server_ip, port_number);
 
     std::cout << "Creating buffers\n";
-    auto sendBuffer = infinity::memory::Buffer::createBuffer(context, MAX_BUFFER_SIZE);
+    auto sendBuffer =
+        infinity::memory::Buffer::createBuffer(context, MAX_BUFFER_SIZE);
     auto receiveBuffer = infinity::memory::Buffer::createBuffer(context, 1);
     context->postReceiveBuffer(receiveBuffer);
 

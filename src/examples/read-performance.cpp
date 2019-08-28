@@ -67,7 +67,7 @@ int main(int argc, char **argv) {
   if (isServer) {
 
     std::cout << "Creating buffers to be read from\n";
-    std::vector<std::shared_ptr<infinity::memory::Buffer>> readBuffers;
+    std::vector<std::shared_ptr<infinity::memory::Buffer> > readBuffers;
     std::vector<infinity::memory::RegionToken> regionTokens;
     for (uint32_t i = 0; i < BUFFER_COUNT; ++i) {
       readBuffers.emplace_back(

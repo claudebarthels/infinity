@@ -82,7 +82,7 @@ QueuePair::QueuePair(std::shared_ptr<infinity::core::Context> context)
   defaultAtomic = std::make_shared<infinity::memory::Atomic>(context);
 }
 
-QueuePair::~QueuePair() {
+QueuePair::~QueuePair() noexcept(false) {
 
   int32_t returnValue = ibv_destroy_qp(this->ibvQueuePair);
   INFINITY_ASSERT(returnValue == 0,

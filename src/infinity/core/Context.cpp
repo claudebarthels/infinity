@@ -84,7 +84,7 @@ Context::Context(uint16_t device, uint16_t devicePort) {
       "[INFINITY][CORE][CONTEXT] Could not allocate shared receive queue.\n");
 }
 
-Context::~Context() {
+Context::~Context() noexcept(false) {
 
   // Destroy shared receive queue
   int returnValue = ibv_destroy_srq(this->ibvSharedReceiveQueue);

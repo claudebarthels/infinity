@@ -67,7 +67,7 @@ public:
   /**
    * Destructor
    */
-  ~Context();
+  ~Context() noexcept(false);
 
   Context(const Context &) = delete;
   Context(const Context &&) = delete;

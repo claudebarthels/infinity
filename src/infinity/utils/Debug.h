@@ -9,6 +9,8 @@
 #ifndef UTILS_DEBUG_H_
 #define UTILS_DEBUG_H_
 
+#include "Exception.h"
+#include <stdexcept>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,9 +29,9 @@
 #define INFINITY_ASSERT(B, X, ...)                                             \
   {                                                                            \
     if (!(B)) {                                                                \
-      fprintf(stdout, X, ##__VA_ARGS__);                                       \
-      fflush(stdout);                                                          \
-      exit(-1);                                                                \
+      char buffer[2048];                                                       \
+      ::snprintf(buffer, sizeof(buffer), X, ##__VA_ARGS__);                    \
+      throw ::infinity::utils::Exception(buffer);                              \
     }                                                                          \
   }
 #else
