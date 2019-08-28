@@ -94,6 +94,11 @@ uint16_t QueuePairFactory::getPort() {
   return 0;
 }
 
+int32_t QueuePairFactory::getSocket() const
+{
+    return serverSocket;
+}
+
 int32_t QueuePairFactory::readFromSocket(int32_t socket, char *buffer,
                                          uint32_t size) {
   int32_t bytesReceived = 0;

@@ -29,7 +29,18 @@ public:
    * Bind to port for listening to incoming connections
    */
   void bindToPort(uint16_t port);
+
+  /**
+   * Retrieve the port that we bound too; useful if we asked for
+   * an ephemeral port
+   */
   uint16_t getPort();
+
+   /**
+   * Get the server socket, useful to integerate into other
+   * event loops.
+   */
+  int32_t getSocket() const;
 
   /**
    * Accept incoming connection request (passive side)
