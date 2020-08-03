@@ -67,7 +67,8 @@ QueuePair::QueuePair(infinity::core::Context* context) :
 	INFINITY_ASSERT(returnValue == 0, "[INFINITY][QUEUES][QUEUEPAIR] Cannot transition to INIT state.\n");
 
 	std::random_device randomGenerator;
-	this->sequenceNumber = randomGenerator();
+        std::uniform_int_distribution<int> range(0, 1<<24);
+        this->sequenceNumber = range(randomGenerator);
 
 	this->userData = NULL;
 	this->userDataSize = 0;
