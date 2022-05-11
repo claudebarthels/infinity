@@ -12,8 +12,8 @@ PROJECT_NAME = libinfinity
 
 ##################################################
 
-CC 					= g++
-CC_FLAGS 		= -O3 -std=c++0x
+CC 				= g++
+CC_FLAGS 		= -O3 -std=c++0x -D_RDMA_USE_ODP
 LD_FLAGS		= -linfinity -libverbs
 
 ##################################################

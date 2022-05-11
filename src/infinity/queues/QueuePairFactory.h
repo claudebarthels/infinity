@@ -27,7 +27,7 @@ public:
 	/**
 	 * Bind to port for listening to incoming connections
 	 */
-	void bindToPort(uint16_t port);
+	void bindToPort(uint16_t port, const char *interfaceName = nullptr);
 
 	/**
 	 * Accept incoming connection request (passive side)

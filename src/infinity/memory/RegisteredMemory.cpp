@@ -28,8 +28,14 @@ RegisteredMemory::RegisteredMemory(infinity::core::Context* context, uint64_t si
 
 	memset(this->data, 0, sizeInBytes);
 
+#ifdef _RDMA_USE_ODP
+	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), NULL, SIZE_MAX,
+			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_ON_DEMAND);
+#else
 	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), this->data, this->sizeInBytes,
 			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
+#endif // _RDMA_USE_ODP
+
 	INFINITY_ASSERT(this->ibvMemoryRegion != NULL, "[INFINITY][MEMORY][REGISTERED] Registration failed.\n");
 }
 
@@ -41,8 +47,14 @@ RegisteredMemory::RegisteredMemory(infinity::core::Context* context, void *data,
 
 	this->data = data;
 
+#ifdef _RDMA_USE_ODP
+	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), NULL, SIZE_MAX,
+			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_ON_DEMAND);
+#else
 	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), this->data, this->sizeInBytes,
 			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
+#endif // _RDMA_USE_ODP
+
 	INFINITY_ASSERT(this->ibvMemoryRegion != NULL, "[INFINITY][MEMORY][REGISTERED] Registration failed.\n");
 }
 

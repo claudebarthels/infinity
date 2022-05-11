@@ -19,6 +19,8 @@
 #include <infinity/requests/RequestToken.h>
 #include <infinity/utils/Debug.h>
 
+#include <signal.h>
+
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 namespace infinity {
@@ -70,6 +72,18 @@ Context::Context(uint16_t device, uint16_t devicePort) {
 	// Create a default request token
 	defaultRequestToken = new infinity::requests::RequestToken(this);
 	defaultAtomic = new infinity::memory::Atomic(this);
+
+#ifdef _RDMA_USE_ODP
+	// Check if On-Demand-Paging (ODP) is supported by the device
+	ibv_device_attr_ex da;
+	INFINITY_ASSERT(ibv_query_device_ex(this->ibvContext, NULL, &da) == 0, "[INFINITY][CORE][CONTEXT] Failed to query device for extended device properties.\n");
+	INFINITY_ASSERT(da.odp_caps.general_caps & IBV_ODP_SUPPORT, "[INFINITY][CORE][CONTEXT] ODP is not supported.\n");
+	INFINITY_ASSERT(da.odp_caps.general_caps & IBV_ODP_SUPPORT_IMPLICIT, "[INFINITY][CORE][CONTEXT] ODP implicit is not supported.\n");
+	INFINITY_ASSERT(da.odp_caps.per_transport_caps.rc_odp_caps & IBV_ODP_SUPPORT_READ, "[INFINITY][CORE][CONTEXT] ODP for reads is not supported.\n");
+	INFINITY_ASSERT(da.odp_caps.per_transport_caps.rc_odp_caps & IBV_ODP_SUPPORT_RECV, "[INFINITY][CORE][CONTEXT] ODP for receives is not supported.\n");
+	INFINITY_ASSERT(da.odp_caps.per_transport_caps.rc_odp_caps & IBV_ODP_SUPPORT_WRITE, "[INFINITY][CORE][CONTEXT] ODP for writes is not supported.\n");
+	INFINITY_ASSERT(da.odp_caps.per_transport_caps.rc_odp_caps & IBV_ODP_SUPPORT_SEND, "[INFINITY][CORE][CONTEXT] ODP for sends is not supported.\n");
+#endif // _RDMA_USE_ODP
 
 }
 
