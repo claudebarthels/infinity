@@ -4,6 +4,10 @@ Infinity is a simple, powerful, object-oriented abstraction of ibVerbs. The libr
 
 ## Installation
 
+### Note
+
+**If you would like to build this library without On-Demand-Paging for RDMA (e.g., your device does not support it), then remove the `-D_RDMA_USE_ODP` flag from `CC_FLAGS` in the `Makefile`.**
+
 Installing ''ibVerbs'' is a prerequisite before building Infinity. The output is located in ''release/libinfinity.a''.
 
 ```sh

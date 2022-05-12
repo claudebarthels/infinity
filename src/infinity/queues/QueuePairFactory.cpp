@@ -67,6 +67,7 @@ void QueuePairFactory::bindToPort(uint16_t port) {
 
 	char *ipAddressOfDevice = infinity::utils::Address::getIpAddressOfInterface(infinity::core::Configuration::DEFAULT_IB_DEVICE);
 	INFINITY_DEBUG("[INFINITY][QUEUES][FACTORY] Accepting connections on IP address %s and port %d.\n", ipAddressOfDevice, port);
+	INFINITY_DEBUG("[INFINITY][QUEUES][FACTORY] Accepting connections on interface %s, IP address %s and port %d.\n", interfaceNameToQuery, ipAddressOfDevice, port);
 	free(ipAddressOfDevice);
 
 }

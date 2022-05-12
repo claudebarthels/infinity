@@ -30,8 +30,14 @@ Buffer::Buffer(infinity::core::Context* context, uint64_t sizeInBytes) {
 
 	memset(this->data, 0, sizeInBytes);
 
+#ifdef _RDMA_USE_ODP
+	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), NULL, SIZE_MAX,
+			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_ON_DEMAND);
+#else
 	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), this->data, this->sizeInBytes,
 			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
+#endif // _RDMA_USE_ODP
+
 	INFINITY_ASSERT(this->ibvMemoryRegion != NULL, "[INFINITY][MEMORY][BUFFER] Registration failed.\n");
 
 	this->memoryAllocated = true;
@@ -60,8 +66,15 @@ Buffer::Buffer(infinity::core::Context *context, void *memory, uint64_t sizeInBy
 	this->memoryRegionType = RegionType::BUFFER;
 
 	this->data = memory;
+
+#ifdef _RDMA_USE_ODP
+	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), NULL, SIZE_MAX,
+			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_ON_DEMAND);
+#else
 	this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), this->data, this->sizeInBytes,
 			IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
+#endif // _RDMA_USE_ODP
+
 	INFINITY_ASSERT(this->ibvMemoryRegion != NULL, "[INFINITY][MEMORY][BUFFER] Registration failed.\n");
 
 	this->memoryAllocated = false;
@@ -84,6 +97,16 @@ void* Buffer::getData() {
 	return reinterpret_cast<void *>(this->getAddress());
 }
 
+void Buffer::setData(void *data, uint64_t sizeInBytes) {
+	if (this->memoryAllocated) {
+		free(this->data);
+	}
+
+	this->data = data;
+	this->sizeInBytes = sizeInBytes;
+	this->memoryAllocated = false;
+}
+
 void Buffer::resize(uint64_t newSize, void* newData) {
 
 	void *oldData = this->data;
@@ -100,8 +123,14 @@ void Buffer::resize(uint64_t newSize, void* newData) {
 
 	if (memoryRegistered) {
 		ibv_dereg_mr(this->ibvMemoryRegion);
+
+	// When using ODP, nothing needs to be done since we don't register specific addresses anyway.
+	// So re-assigning a new buffer and new size is a no-op in the ODP case in terms of registering.
+#ifndef _RDMA_USE_ODP
 		this->ibvMemoryRegion = ibv_reg_mr(this->context->getProtectionDomain(), newData, newSize,
 				IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_READ);
+#endif // _RDMA_USE_ODP
+
 		this->data = newData;
 		this->sizeInBytes = newSize;
 	} else {

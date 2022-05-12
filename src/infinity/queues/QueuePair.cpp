@@ -38,6 +38,28 @@ int OperationFlags::ibvFlags() {
 QueuePair::QueuePair(infinity::core::Context* context) :
 		context(context) {
 
+#ifdef _RDMA_USE_ODP
+	ibv_qp_init_attr_ex qpInitAttributes;
+	memset(&qpInitAttributes, 0, sizeof(qpInitAttributes));
+
+	qpInitAttributes.send_cq = context->getSendCompletionQueue();
+	qpInitAttributes.recv_cq = context->getReceiveCompletionQueue();
+	qpInitAttributes.srq = context->getSharedReceiveQueue();
+	qpInitAttributes.cap.max_send_wr = MAX(infinity::core::Configuration::SEND_COMPLETION_QUEUE_LENGTH, 1);
+	qpInitAttributes.cap.max_send_sge = infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS;
+	qpInitAttributes.cap.max_recv_wr = MAX(infinity::core::Configuration::RECV_COMPLETION_QUEUE_LENGTH, 1);
+	qpInitAttributes.cap.max_recv_sge = infinity::core::Configuration::MAX_NUMBER_OF_SGE_ELEMENTS;
+	qpInitAttributes.qp_type = IBV_QPT_RC;
+	qpInitAttributes.sq_sig_all = 0;
+	qpInitAttributes.pd = context->getProtectionDomain();
+	qpInitAttributes.comp_mask  = IBV_QP_INIT_ATTR_PD | IBV_QP_INIT_ATTR_SEND_OPS_FLAGS;
+	qpInitAttributes.send_ops_flags = IBV_QP_EX_WITH_SEND;
+
+	this->ibvQueuePair = ibv_create_qp_ex(context->getInfiniBandContext(), &qpInitAttributes);
+	INFINITY_ASSERT(this->ibvQueuePair != NULL, "[INFINITY][QUEUES][QUEUEPAIR] Cannot create queue pair.\n");
+
+	unsigned int qp_access_flags = 0;
+#else
 	ibv_qp_init_attr qpInitAttributes;
 	memset(&qpInitAttributes, 0, sizeof(qpInitAttributes));
 
@@ -54,13 +76,16 @@ QueuePair::QueuePair(infinity::core::Context* context) :
 	this->ibvQueuePair = ibv_create_qp(context->getProtectionDomain(), &(qpInitAttributes));
 	INFINITY_ASSERT(this->ibvQueuePair != NULL, "[INFINITY][QUEUES][QUEUEPAIR] Cannot create queue pair.\n");
 
+	unsigned int qp_access_flags = IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_ATOMIC;
+#endif // _RDMA_USE_ODP
+
 	ibv_qp_attr qpAttributes;
 	memset(&qpAttributes, 0, sizeof(qpAttributes));
 
 	qpAttributes.qp_state = IBV_QPS_INIT;
 	qpAttributes.pkey_index = 0;
 	qpAttributes.port_num = context->getDevicePort();
-	qpAttributes.qp_access_flags = IBV_ACCESS_REMOTE_WRITE | IBV_ACCESS_REMOTE_READ | IBV_ACCESS_LOCAL_WRITE | IBV_ACCESS_REMOTE_ATOMIC;
+	qpAttributes.qp_access_flags = qp_access_flags;
 
 	int32_t returnValue = ibv_modify_qp(this->ibvQueuePair, &(qpAttributes), IBV_QP_STATE | IBV_QP_PORT | IBV_QP_ACCESS_FLAGS | IBV_QP_PKEY_INDEX);
 

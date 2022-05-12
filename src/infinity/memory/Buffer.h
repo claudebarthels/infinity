@@ -28,6 +28,7 @@ public:
 public:
 
 	void * getData();
+	void setData(void *data, uint64_t sizeInBytes);
 	void resize(uint64_t newSize, void *newData = NULL);
 
 protected:
