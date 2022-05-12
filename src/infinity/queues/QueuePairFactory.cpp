@@ -45,7 +45,7 @@ QueuePairFactory::~QueuePairFactory() {
 
 }
 
-void QueuePairFactory::bindToPort(uint16_t port, const char *interfaceName) {
+void QueuePairFactory::bindToPort(uint16_t port) {
 
 	serverSocket = socket(AF_INET, SOCK_STREAM, 0);
 	INFINITY_ASSERT(serverSocket >= 0, "[INFINITY][QUEUES][FACTORY] Cannot open server socket.\n");
@@ -65,8 +65,8 @@ void QueuePairFactory::bindToPort(uint16_t port, const char *interfaceName) {
 	returnValue = listen(serverSocket, 128);
 	INFINITY_ASSERT(returnValue == 0, "[INFINITY][QUEUES][FACTORY] Cannot listen on server socket.\n");
 
-	const char *interfaceNameToQuery = interfaceName != nullptr ? interfaceName : infinity::core::Configuration::DEFAULT_IB_DEVICE;
-	char *ipAddressOfDevice = infinity::utils::Address::getIpAddressOfInterface(interfaceNameToQuery);
+	char *ipAddressOfDevice = infinity::utils::Address::getIpAddressOfInterface(infinity::core::Configuration::DEFAULT_IB_DEVICE);
+	INFINITY_DEBUG("[INFINITY][QUEUES][FACTORY] Accepting connections on IP address %s and port %d.\n", ipAddressOfDevice, port);
 	INFINITY_DEBUG("[INFINITY][QUEUES][FACTORY] Accepting connections on interface %s, IP address %s and port %d.\n", interfaceNameToQuery, ipAddressOfDevice, port);
 	free(ipAddressOfDevice);
 
