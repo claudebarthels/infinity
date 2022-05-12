@@ -19,8 +19,6 @@
 #include <infinity/requests/RequestToken.h>
 #include <infinity/utils/Debug.h>
 
-#include <signal.h>
-
 #define MAX(a,b) ((a) > (b) ? (a) : (b))
 
 namespace infinity {
